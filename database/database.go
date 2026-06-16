@@ -7,7 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func Connect(config DatabaseConfig) (*sql.DB, error) {
+func Connect(config *DatabaseConfig) (*sql.DB, error) {
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?parseTime=true&charset=utf8mb4",
 		config.Username,
