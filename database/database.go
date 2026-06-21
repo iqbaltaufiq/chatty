@@ -8,6 +8,9 @@ import (
 )
 
 func Connect(config *DatabaseConfig) (*sql.DB, error) {
+	if config == nil {
+		return nil, &ErrNoConfig{}
+	}
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?parseTime=true&charset=utf8mb4",
 		config.Username,
