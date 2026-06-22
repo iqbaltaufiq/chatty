@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type RoomParticipant struct {
+type Occupant struct {
 	ID        int        `json:"id"`
 	RoomID    string     `json:"room_id"`
 	Username  string     `json:"username"`
