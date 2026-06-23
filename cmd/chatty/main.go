@@ -1,13 +1,14 @@
 package main
 
 import (
-	"chatty/database"
-	"chatty/router"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
+
+	"chatty/database"
+	"chatty/router"
 )
 
 func init() {
@@ -16,27 +17,12 @@ func init() {
 
 func main() {
 	var (
-		dbDriver   = os.Getenv("DB_DRIVER")
-		dbName     = os.Getenv("DB_NAME")
-		dbUsername = os.Getenv("DB_USERNAME")
-		dbPassword = os.Getenv("DB_PASSWORD")
-		dbHost     = os.Getenv("DB_HOST")
-		dbPort     = os.Getenv("DB_PORT")
 		appHost    = os.Getenv("APP_HOST")
 		appPort    = os.Getenv("APP_PORT")
 		serverAddr = appHost + ":" + appPort
 	)
 
-	dbconfig := &database.DatabaseConfig{
-		Driver:   dbDriver,
-		Name:     dbName,
-		Username: dbUsername,
-		Password: dbPassword,
-		Host:     dbHost,
-		Port:     dbPort,
-	}
-
-	db, err := database.Connect(dbconfig)
+	db, err := database.Connect()
 	if err != nil {
 		log.Fatalln("error initializing connection to database")
 	}

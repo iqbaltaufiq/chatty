@@ -2,25 +2,19 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func Connect(config *DatabaseConfig) (*sql.DB, error) {
-	if config == nil {
+func Connect() (*sql.DB, error) {
+	driver := os.Getenv("DB_DRIVER")
+	dsn := os.Getenv("DB_DSN")
+	if driver == "" || dsn == "" {
 		return nil, &ErrNoConfig{}
 	}
-	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?parseTime=true&charset=utf8mb4",
-		config.Username,
-		config.Password,
-		config.Host,
-		config.Port,
-		config.Name,
-	)
 
-	db, err := sql.Open(config.Driver, dsn)
+	db, err := sql.Open(driver, dsn)
 	if err != nil {
 		return nil, err
 	}
