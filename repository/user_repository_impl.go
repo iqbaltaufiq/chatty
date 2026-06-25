@@ -150,3 +150,18 @@ func (r *userRepository) UpdateFullname(ctx context.Context, username, fullname 
 	_, err := stmt.ExecContext(ctx, fullname, username)
 	return err
 }
+
+// UpdatePhoto update the stored filename of a user's profile photo.
+func (r *userRepository) UpdatePhoto(ctx context.Context, username, photo string) error {
+	query := `
+	UPDATE users
+	SET photo = ?
+	WHERE username = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(ctx, photo, username)
+	return err
+}
