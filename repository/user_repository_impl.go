@@ -43,3 +43,21 @@ func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error
 	)
 	return err
 }
+
+// GetPassword should only be used for authentication purpose.
+// It returns the user's password.
+func (r *userRepository) GetPassword(ctx context.Context, username string) (string, error) {
+	query := `
+	SELECT password
+	FROM users
+	WHERE username = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	var password string
+	row := stmt.QueryRowContext(ctx, username)
+	err := row.Scan(&password)
+	return password, err
+}
