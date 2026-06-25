@@ -15,9 +15,22 @@ func NewRoomRepository(db *sql.DB) RoomRepository {
 	return &roomRepository{db}
 }
 
+// Create inserts a newly created room into db.
 func (r *roomRepository) Create(ctx context.Context, room entity.Room) error {
-	// not yet implemented
-	return nil
+	query := `
+	INSERT INTO rooms (id, name, is_private)
+	VALUES (?,?,?)
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(
+		ctx,
+		room.ID,
+		room.Name,
+		room.IsPrivate,
+	)
+	return err
 }
 
 func (r *roomRepository) UpdateName(ctx context.Context, roomID, roomName string) error {
