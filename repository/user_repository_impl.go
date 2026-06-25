@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"chatty/entity"
 	"chatty/util"
@@ -141,14 +142,19 @@ func (r *userRepository) GetUserByUUID(ctx context.Context, uuid []byte) (entity
 func (r *userRepository) UpdateFullname(ctx context.Context, username, fullname string) error {
 	query := `
 	UPDATE users
-	SET fullname = ?
+	SET fullname = ?, updated_at = ?
 	WHERE username = ?
 	LIMIT 1
 	`
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	_, err := stmt.ExecContext(ctx, fullname, username)
+	_, err := stmt.ExecContext(
+		ctx,
+		fullname,
+		time.Now().UTC(),
+		username,
+	)
 	return err
 }
 
@@ -156,13 +162,18 @@ func (r *userRepository) UpdateFullname(ctx context.Context, username, fullname 
 func (r *userRepository) UpdatePhoto(ctx context.Context, username, photo string) error {
 	query := `
 	UPDATE users
-	SET photo = ?
+	SET photo = ?, updated_at = ?
 	WHERE username = ?
 	LIMIT 1
 	`
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	_, err := stmt.ExecContext(ctx, photo, username)
+	_, err := stmt.ExecContext(
+		ctx,
+		photo,
+		time.Now().UTC(),
+		username,
+	)
 	return err
 }
