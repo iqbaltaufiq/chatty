@@ -33,7 +33,17 @@ func (r *roomRepository) Create(ctx context.Context, room entity.Room) error {
 	return err
 }
 
+// UpdateName alters the room's name.
 func (r *roomRepository) UpdateName(ctx context.Context, roomID, roomName string) error {
-	// not yet implemented
-	return nil
+	query := `
+	UPDATE rooms
+	SET name = ?
+	WHERE id = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(ctx, roomName, roomID)
+	return err
 }
