@@ -61,3 +61,28 @@ func (r *userRepository) GetPassword(ctx context.Context, username string) (stri
 	err := row.Scan(&password)
 	return password, err
 }
+
+// GetUser retrieves a user from database identified by their username, excluding password and deleted_at.
+func (r *userRepository) GetUser(ctx context.Context, username string) (entity.User, error) {
+	query := `
+	SELECT uuid, username, fullname, email, photo, created_at, updated_at
+	FROM users
+	WHERE username = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	var user entity.User
+	err := stmt.QueryRowContext(ctx, username).
+		Scan(
+			&user.UUID,
+			&user.Username,
+			&user.Fullname,
+			&user.Email,
+			&user.Photo,
+			&user.CreatedAt,
+			&user.UpdatedAt,
+		)
+	return user, err
+}
