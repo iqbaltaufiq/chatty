@@ -135,3 +135,18 @@ func (r *userRepository) GetUserByUUID(ctx context.Context, uuid []byte) (entity
 
 	return user, nil
 }
+
+// UpdateFullname update user's full name identified by username.
+func (r *userRepository) UpdateFullname(ctx context.Context, username, fullname string) error {
+	query := `
+	UPDATE users
+	SET fullname = ?
+	WHERE username = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(ctx, fullname, username)
+	return err
+}
