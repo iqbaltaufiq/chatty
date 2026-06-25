@@ -16,6 +16,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 	return &userRepository{db}
 }
 
+// CreateUser creates new user into DB
 func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error {
 	query := `
 	INSERT INTO users (uuid, username, fullname, email, password, photo)
