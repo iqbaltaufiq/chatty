@@ -73,18 +73,30 @@ func (r *userRepository) GetUser(ctx context.Context, username string) (entity.U
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
+	var binaryUUID []byte
 	var user entity.User
-	err := stmt.QueryRowContext(ctx, username).
+	if err := stmt.QueryRowContext(ctx, username).
 		Scan(
-			&user.UUID,
+			&binaryUUID,
 			&user.Username,
 			&user.Fullname,
 			&user.Email,
 			&user.Photo,
 			&user.CreatedAt,
 			&user.UpdatedAt,
-		)
-	return user, err
+		); err != nil {
+		return user, err
+	}
+
+	// `uuid` is stored in BINARY(16) in db.
+	// uuid's struct field accepts string
+	stringUUID, err := util.UUIDtoString(binaryUUID)
+	if err != nil {
+		return user, err
+	}
+	user.UUID = stringUUID
+
+	return user, nil
 }
 
 // GetUserByUUID retrieves a user identified by uuid, excluding password and deleted_at.
