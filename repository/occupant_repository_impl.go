@@ -39,3 +39,26 @@ func (r *occupantRepository) Remove(ctx context.Context, roomID, username string
 	_, err := stmt.ExecContext(ctx, roomID, username)
 	return err
 }
+
+// Exists checks if user exists in the specified room
+func (r *userRepository) Exists(ctx context.Context, roomID, username string) (bool, error) {
+	query := `
+	SELECT COUNT(*) as rows
+	FROM occupants
+	WHERE room_id = ? AND username = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	exists := false
+	rowsFound := 0
+	row := stmt.QueryRowContext(ctx, roomID, username)
+	if err := row.Scan(&rowsFound); err != nil {
+		return exists, err
+	}
+	if rowsFound > 0 {
+		exists = true
+	}
+	return exists, nil
+}
