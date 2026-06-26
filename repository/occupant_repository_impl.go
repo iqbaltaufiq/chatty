@@ -15,8 +15,15 @@ func NewOccupantRepository(db *sql.DB) OccupantRepository {
 
 // Add assigns user to the room.
 func (r *occupantRepository) Add(ctx context.Context, roomID, username string) error {
-	// not yet implemented
-	return nil
+	query := `
+	INSERT INTO occupants (room_id, username)
+	VALUES (?,?)
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(ctx, roomID, username)
+	return err
 }
 
 // Remove takes out user from the room.
