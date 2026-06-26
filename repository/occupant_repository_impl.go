@@ -28,6 +28,14 @@ func (r *occupantRepository) Add(ctx context.Context, roomID, username string) e
 
 // Remove takes out user from the room.
 func (r *occupantRepository) Remove(ctx context.Context, roomID, username string) error {
-	// not yet implemented
-	return nil
+	query := `
+	DELETE FROM occupants
+	WHERE room_id = ? AND username = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(ctx, roomID, username)
+	return err
 }
