@@ -49,6 +49,36 @@ func (r *chatRepository) Delete(ctx context.Context, chatID int) error {
 
 // GetAll retrieves all the messages that belongs to a room.
 func (r *chatRepository) GetAll(ctx context.Context, roomID string) ([]entity.Chat, error) {
-	// not yet implemented
-	return nil, nil
+	const MaxRows int = 25
+	query := `
+	SELECT id, username, message, room_id, created_at, updated_at
+	FROM chats
+	WHERE room_id = ?
+	LIMIT ?
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(ctx, roomID, MaxRows)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	chats := make([]entity.Chat, 0, MaxRows)
+	for rows.Next() {
+		var chat entity.Chat
+		if err := rows.Scan(
+			&chat.ID,
+			&chat.Username,
+			&chat.Message,
+			&chat.RoomID,
+			&chat.CreatedAt,
+			&chat.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		chats = append(chats, chat)
+	}
+	return chats, nil
 }
