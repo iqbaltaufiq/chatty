@@ -6,6 +6,7 @@ import (
 	"chatty/entity"
 	"chatty/model"
 	"chatty/repository"
+	"chatty/util"
 )
 
 type authService struct {
@@ -20,8 +21,15 @@ func NewAuthService(userRepo repository.UserRepository) AuthService {
 
 // CreateUser generates UUID, hashes the password, and stores the user into database.
 func (s *authService) CreateUser(ctx context.Context, user entity.User) error {
-	// not yet implemented
-	return nil
+	// hash user's password using bcrypt
+	hashPwd, err := util.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashPwd
+	user.UUID = util.GenerateUUID()
+
+	return s.userRepo.CreateUser(ctx, user)
 }
 
 // ValidateCreds checks if password from request matches the password stored in database.
