@@ -35,8 +35,16 @@ func (r *chatRepository) Save(ctx context.Context, chat entity.Chat) error {
 
 // Delete removes a message from database.
 func (r *chatRepository) Delete(ctx context.Context, chatID int) error {
-	// not yet implemented
-	return nil
+	query := `
+	DELETE FROM chats
+	WHERE id = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(ctx, chatID)
+	return err
 }
 
 // GetAll retrieves all the messages that belongs to a room.
