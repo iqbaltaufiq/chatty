@@ -47,3 +47,21 @@ func GenerateJWT(userID, role string) (string, error) {
 	return jwt.NewWithClaims(SigningMethod, claims).
 		SignedString([]byte(SecretKey))
 }
+
+// ValidateJWT checks if the passed token is a valid JWT token.
+// Returns type-asserted `*CustomClaims` and nil if succeed.
+func ValidateJWT(t string) (*CustomClaims, error) {
+	secret := func(token *jwt.Token) (any, error) {
+		return []byte(SecretKey), nil
+	}
+
+	token, err := jwt.ParseWithClaims(t, &CustomClaims{}, secret)
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := token.Claims.(*CustomClaims)
+	if !ok {
+		return nil, jwt.ErrTokenInvalidClaims
+	}
+	return claims, nil
+}
