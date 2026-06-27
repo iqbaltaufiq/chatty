@@ -17,8 +17,20 @@ func NewChatRepository(db *sql.DB) ChatRepository {
 
 // Save stores a message into database.
 func (r *chatRepository) Save(ctx context.Context, chat entity.Chat) error {
-	// not yet implemented
-	return nil
+	query := `
+	INSERT INTO chats (username, message, room_id)
+	VALUES (?,?,?)
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(
+		ctx,
+		chat.Username,
+		chat.Message,
+		chat.RoomID,
+	)
+	return err
 }
 
 // Delete removes a message from database.
