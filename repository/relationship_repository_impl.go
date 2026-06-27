@@ -28,9 +28,18 @@ func (r *relationshipRepository) Add(ctx context.Context, initiator, target stri
 	return err
 }
 
-func (r *relationshipRepository) Remove(ctx context.Context, initiator, target string) error {
-	// not yet implemented
-	return nil
+// Remove removes relationship between two users.
+func (r *relationshipRepository) Remove(ctx context.Context, friendID int) error {
+	query := `
+	DELETE FROM relationships
+	WHERE id = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(ctx, friendID)
+	return err
 }
 
 func (r *relationshipRepository) Exists(ctx context.Context, initiator, target string) (bool, error) {
