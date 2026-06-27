@@ -34,6 +34,9 @@ func (s *authService) CreateUser(ctx context.Context, user entity.User) error {
 
 // ValidateCreds checks if password from request matches the password stored in database.
 func (s *authService) ValidateCreds(ctx context.Context, creds model.Credential) error {
-	// not yet implemented
-	return nil
+	dbPassword, err := s.userRepo.GetPassword(ctx, creds.Username)
+	if err != nil {
+		return err
+	}
+	return util.MatchPassword(creds.Password, dbPassword)
 }
