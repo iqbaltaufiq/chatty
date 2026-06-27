@@ -7,7 +7,7 @@ import (
 
 const AuthCookieName = "auth_v1"
 
-func SetAuthCookie(name, value string, maxAge int) *http.Cookie {
+func SetAuthCookie(value string, maxAge int) *http.Cookie {
 	appEnv := os.Getenv("APP_ENV")
 	secureCookie := appEnv == "production"
 
