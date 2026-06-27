@@ -42,9 +42,32 @@ func (r *relationshipRepository) Remove(ctx context.Context, friendID int) error
 	return err
 }
 
+// Exists checks if two users have befriended with each other.
 func (r *relationshipRepository) Exists(ctx context.Context, initiator, target string) (bool, error) {
-	// not yet implemented
-	return false, nil
+	query := `
+	SELECT COUNT(*) as rowsCount
+	FROM relationships
+	WHERE initiator = ? AND target = ? OR initiator = ? AND target = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(
+		ctx,
+		initiator, target,
+		target, initiator,
+	)
+
+	exists := false
+	rowsCount := 0
+	if err := row.Scan(&rowsCount); err != nil {
+		return exists, err
+	}
+	if rowsCount > 0 {
+		exists = true
+	}
+	return exists, nil
 }
 
 func (r *relationshipRepository) GetFriends(ctx context.Context, username string) ([]model.Friend, error) {
