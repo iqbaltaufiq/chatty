@@ -3,23 +3,56 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"chatty/entity"
+	"chatty/model"
 	"chatty/service"
+	"chatty/util"
 )
 
 type authHandler struct {
 	authService service.AuthService
+	userService service.UserService
 }
 
-func NewAuthHandler(authService service.AuthService) AuthHandler {
+func NewAuthHandler(
+	authService service.AuthService,
+	userService service.UserService,
+) AuthHandler {
 	return &authHandler{
 		authService,
+		userService,
 	}
 }
 
 func (h *authHandler) Login(w http.ResponseWriter, r *http.Request) {
-	// not yet implemented
+	var creds model.Credential
+
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
+		jsonError(w, http.StatusBadRequest, err)
+		return
+	}
+	creds.Username = strings.TrimSpace(creds.Username)
+
+	if err := h.authService.ValidateCreds(r.Context(), creds); err != nil {
+		jsonError(w, http.StatusUnauthorized, err)
+		return
+	}
+	user, _ := h.userService.GetUser(r.Context(), creds.Username)
+
+	// create auth cookie that contains jwt as its value.
+	jsonwebtoken, err := util.GenerateJWT(user.UUID, "user")
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, err)
+		return
+	}
+	authCookie := util.SetAuthCookie(jsonwebtoken, 60*60*24)
+	http.SetCookie(w, authCookie)
+
+	jsonSuccess(w, http.StatusOK, M{
+		"message": "you are successfully logged in",
+	})
 }
 
 // Register handles account creation for new user.
