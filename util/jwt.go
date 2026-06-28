@@ -9,15 +9,17 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	SigningMethod = jwt.SigningMethodHS256
-	SecretKey     = os.Getenv("JWT_SECRET")
-)
+var SigningMethod = jwt.SigningMethodHS256
 
 type CustomClaims struct {
 	UserID string `json:"user_id"`
 	Role   string `json:"role"`
 	jwt.RegisteredClaims
+}
+
+// HMAC-SHA signing method expects key type of []byte for signing and validation.
+func getSecretKey() []byte {
+	return []byte(os.Getenv("JWT_SECRET"))
 }
 
 // GenerateJWT creates a jwt token used for authentication process.
@@ -45,16 +47,15 @@ func GenerateJWT(userID, role string) (string, error) {
 		},
 	}
 	return jwt.NewWithClaims(SigningMethod, claims).
-		SignedString([]byte(SecretKey))
+		SignedString(getSecretKey())
 }
 
 // ValidateJWT checks if the passed token is a valid JWT token.
 // Returns type-asserted `*CustomClaims` and nil if succeed.
 func ValidateJWT(t string) (*CustomClaims, error) {
 	secret := func(token *jwt.Token) (any, error) {
-		return []byte(SecretKey), nil
+		return getSecretKey(), nil
 	}
-
 	token, err := jwt.ParseWithClaims(t, &CustomClaims{}, secret)
 	if err != nil {
 		return nil, err
