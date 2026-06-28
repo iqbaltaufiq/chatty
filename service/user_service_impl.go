@@ -19,8 +19,7 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 
 // GetUser retrieves user based on their username.
 func (s *userService) GetUser(ctx context.Context, username string) (entity.User, error) {
-	// not yet implemented
-	return entity.User{}, nil
+	return s.userRepo.GetUser(ctx, username)
 }
 
 // GetUserByUUID retrieves user based on their UUID.
