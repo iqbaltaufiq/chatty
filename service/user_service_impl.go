@@ -5,6 +5,7 @@ import (
 
 	"chatty/entity"
 	"chatty/repository"
+	"chatty/util"
 )
 
 type userService struct {
@@ -25,8 +26,11 @@ func (s *userService) GetUser(ctx context.Context, username string) (entity.User
 // GetUserByUUID retrieves user based on their UUID.
 // Note that their uuid is stored in BINARY(16), so a conversion from string to binary is necessary.
 func (s *userService) GetUserByUUID(ctx context.Context, uuid string) (entity.User, error) {
-	// not yet implemented
-	return entity.User{}, nil
+	binaryUUID, err := util.UUIDtoBinary(uuid)
+	if err != nil {
+		return entity.User{}, err
+	}
+	return s.userRepo.GetUserByUUID(ctx, binaryUUID)
 }
 
 // UpdateFullname changes a user's full name.
