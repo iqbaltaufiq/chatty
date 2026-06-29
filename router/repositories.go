@@ -1,9 +1,8 @@
 package router
 
 import (
-	"database/sql"
-
 	"chatty/repository"
+	"database/sql"
 )
 
 type repositories struct {
