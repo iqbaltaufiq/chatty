@@ -14,6 +14,7 @@ func NewRouter(db *sql.DB) *http.ServeMux {
 	)
 
 	mux.HandleFunc("POST /api/register", handlers.Auth().Register)
+	mux.HandleFunc("POST /api/login", handlers.Auth().Login)
 
 	return mux
 }
