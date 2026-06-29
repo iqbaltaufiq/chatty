@@ -6,7 +6,12 @@ import (
 )
 
 func NewRouter(db *sql.DB) *http.ServeMux {
-	mux := http.NewServeMux()
+	var (
+		mux          = http.NewServeMux()
+		repositories = NewRepositories(db)
+		services     = NewServices(repositories)
+		handlers     = NewHandlers(services)
+	)
 
 	return mux
 }
