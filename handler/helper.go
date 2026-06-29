@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-// jsonSuccess sets the `Content-Type` header to json before writing `data` into ResponseWriter.
-func jsonSuccess(w http.ResponseWriter, statusCode int, data M) {
+// JSONSuccess sets the `Content-Type` header to json before writing `data` into ResponseWriter.
+func JSONSuccess(w http.ResponseWriter, statusCode int, data M) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
@@ -18,9 +18,9 @@ func jsonSuccess(w http.ResponseWriter, statusCode int, data M) {
 	json.NewEncoder(w).Encode(&payload)
 }
 
-// jsonError sets the `Content-Type` header to json.
+// JSONError sets the `Content-Type` header to json.
 // It does not carry payload. Instead, it sends error string as message.
-func jsonError(w http.ResponseWriter, statusCode int, err error) {
+func JSONError(w http.ResponseWriter, statusCode int, err error) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 

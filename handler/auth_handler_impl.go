@@ -30,13 +30,13 @@ func (h *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var creds model.Credential
 
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
-		jsonError(w, http.StatusBadRequest, err)
+		JSONError(w, http.StatusBadRequest, err)
 		return
 	}
 	creds.Username = strings.TrimSpace(creds.Username)
 
 	if err := h.authService.ValidateCreds(r.Context(), creds); err != nil {
-		jsonError(w, http.StatusUnauthorized, err)
+		JSONError(w, http.StatusUnauthorized, err)
 		return
 	}
 	user, _ := h.userService.GetUser(r.Context(), creds.Username)
@@ -44,13 +44,13 @@ func (h *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	// create auth cookie that contains jwt as its value.
 	jsonwebtoken, err := util.GenerateJWT(user.UUID, "user")
 	if err != nil {
-		jsonError(w, http.StatusUnauthorized, err)
+		JSONError(w, http.StatusUnauthorized, err)
 		return
 	}
 	authCookie := util.SetAuthCookie(jsonwebtoken, 60*60*24)
 	http.SetCookie(w, authCookie)
 
-	jsonSuccess(w, http.StatusOK, M{
+	JSONSuccess(w, http.StatusOK, M{
 		"message": "you are successfully logged in",
 	})
 }
@@ -59,13 +59,13 @@ func (h *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (h *authHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var user entity.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		jsonError(w, http.StatusBadRequest, err)
+		JSONError(w, http.StatusBadRequest, err)
 		return
 	}
 	if err := h.authService.CreateUser(r.Context(), user); err != nil {
-		jsonError(w, http.StatusInternalServerError, err)
+		JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
 	payload := M{"message": "your account has been created"}
-	jsonSuccess(w, http.StatusCreated, payload)
+	JSONSuccess(w, http.StatusCreated, payload)
 }
