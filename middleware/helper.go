@@ -34,3 +34,11 @@ func FromCtxUsername(ctx context.Context) (string, bool) {
 	username, ok := ctx.Value(usernameKey).(string)
 	return username, ok
 }
+
+// FromCtxUUID takes out userID (uuid) from the context.
+//
+// This getter is necessary since context key is non-exportable.
+func FromCtxUUID(ctx context.Context) (string, bool) {
+	userID, ok := ctx.Value(uuidKey).(string)
+	return userID, ok
+}
