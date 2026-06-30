@@ -1,6 +1,9 @@
 package middleware
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
 
 type Middleware func(http.Handler) http.Handler
 
@@ -22,4 +25,12 @@ func Attach(handler http.HandlerFunc, middlewares ...Middleware) http.Handler {
 		final = middlewares[i](final)
 	}
 	return final
+}
+
+// FromCtxUsername takes out username from the context.
+//
+// This getter is necessary since context key is non-exportable.
+func FromCtxUsername(ctx context.Context) (string, bool) {
+	username, ok := ctx.Value(usernameKey).(string)
+	return username, ok
 }
