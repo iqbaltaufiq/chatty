@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"errors"
 	"net/http"
 
@@ -64,6 +63,6 @@ func (m *authMiddleware) NoAuth(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		handler.JSONError(w, http.StatusForbidden, errors.New("please log out first"))
+		handler.JSONError(w, http.StatusForbidden, &AuthErrAlreadyLoggedIn{})
 	})
 }
