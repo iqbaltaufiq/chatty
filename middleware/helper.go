@@ -48,3 +48,9 @@ func FromCtxUUID(ctx context.Context) (string, bool) {
 func SetCtxUsername(parent context.Context, username string) context.Context {
 	return context.WithValue(parent, usernameKey, username)
 }
+
+// SetCtxUUID attaches `uuid` into the `parent` context.
+// Returns the appended context.
+func SetCtxUUID(parent context.Context, uuid string) context.Context {
+	return context.WithValue(parent, uuidKey, uuid)
+}
