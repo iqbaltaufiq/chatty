@@ -49,7 +49,7 @@ func (m *authMiddleware) Protected(next http.Handler) http.Handler {
 		ctxWithUUID := SetCtxUUID(r.Context(), claims.UserID)
 		finalCtx := SetCtxUsername(ctxWithUUID, username)
 
-		next.ServeHTTP(w, r.WithContext(finalCtx))
+		next.ServeHTTP(w, r.Clone(finalCtx))
 	})
 }
 
