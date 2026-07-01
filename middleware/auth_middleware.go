@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"chatty/handler"
@@ -49,5 +50,20 @@ func (m *authMiddleware) Protected(next http.Handler) http.Handler {
 		finalCtx := context.WithValue(ctxWithUUID, usernameKey, username)
 
 		next.ServeHTTP(w, r.WithContext(finalCtx))
+	})
+}
+
+// NoAuth rejects incoming request from authenticated user.
+// It is different than a plain endpoint without middleware.
+//
+// This is the oppsite of `Protected` method, preventing endpoints like `/login` and `/register`
+// being accessed by authenticated user.
+func (m *authMiddleware) NoAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, err := r.Cookie(util.AuthCookieName); errors.Is(err, http.ErrNoCookie) {
+			next.ServeHTTP(w, r)
+			return
+		}
+		handler.JSONError(w, http.StatusForbidden, errors.New("please log out first"))
 	})
 }
