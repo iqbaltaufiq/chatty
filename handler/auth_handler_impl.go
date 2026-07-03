@@ -39,7 +39,11 @@ func (h *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 		JSONError(w, http.StatusUnauthorized, err)
 		return
 	}
-	user, _ := h.userService.GetUser(r.Context(), creds.Username)
+	user, err := h.userService.GetUser(r.Context(), creds.Username)
+	if err != nil {
+		JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	// create auth cookie that contains jwt as its value.
 	jsonwebtoken, err := util.GenerateJWT(user.UUID, "user")
