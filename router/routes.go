@@ -20,6 +20,6 @@ func NewRouter(db *sql.DB) *http.ServeMux {
 
 	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMidw.NoAuth))
 	mux.Handle("POST /api/login", mw.Attach(authHandler.Login, authMidw.NoAuth))
-
+	mux.Handle("POST /api/logout", mw.Attach(authHandler.Logout, authMidw.Protected))
 	return mux
 }
