@@ -69,3 +69,10 @@ func (h *authHandler) Register(w http.ResponseWriter, r *http.Request) {
 	payload := M{"message": "your account has been created"}
 	JSONSuccess(w, http.StatusCreated, payload)
 }
+
+// Logout deauthenticates user by removing their auth cookie.
+func (h *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	deletedCookie := util.DeleteCookie(util.AuthCookieName)
+	http.SetCookie(w, deletedCookie)
+	JSONSuccess(w, http.StatusOK, M{"message": "logout successfully"})
+}
