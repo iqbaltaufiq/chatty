@@ -42,7 +42,7 @@ func (s *userService) GetUserByUUID(ctx context.Context, uuid string) (entity.Us
 // UpdateFullname changes a user's full name.
 func (s *userService) UpdateFullname(ctx context.Context, username, fullname string) error {
 	fullname = strings.TrimSpace(fullname)
-	return s.UpdateFullname(ctx, username, fullname)
+	return s.userRepo.UpdateFullname(ctx, username, fullname)
 }
 
 // UpdatePhoto changes a user's profile photo.
