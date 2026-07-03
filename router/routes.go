@@ -3,6 +3,8 @@ package router
 import (
 	"database/sql"
 	"net/http"
+
+	mw "chatty/middleware"
 )
 
 func NewRouter(db *sql.DB) *http.ServeMux {
@@ -11,10 +13,13 @@ func NewRouter(db *sql.DB) *http.ServeMux {
 		repositories = NewRepositories(db)
 		services     = NewServices(repositories)
 		handlers     = NewHandlers(services)
+		authMidw     = mw.NewAuthMiddleware(services.User())
 	)
 
-	mux.HandleFunc("POST /api/register", handlers.Auth().Register)
-	mux.HandleFunc("POST /api/login", handlers.Auth().Login)
+	authHandler := handlers.Auth()
+
+	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMidw.NoAuth))
+	mux.Handle("POST /api/login", mw.Attach(authHandler.Login, authMidw.NoAuth))
 
 	return mux
 }
