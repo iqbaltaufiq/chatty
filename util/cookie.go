@@ -21,3 +21,12 @@ func SetAuthCookie(value string, maxAge int) *http.Cookie {
 		SameSite: http.SameSiteStrictMode,
 	}
 }
+
+func DeleteCookie(name string) *http.Cookie {
+	return &http.Cookie{
+		Name:   name,
+		Value:  "",
+		MaxAge: -1,
+		Path:   "/",
+	}
+}
