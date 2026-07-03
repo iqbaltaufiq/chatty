@@ -10,7 +10,7 @@ func GenerateUUID() string {
 }
 
 func UUIDtoString(b []byte) (string, error) {
-	newID, err := uuid.ParseBytes(b)
+	newID, err := uuid.FromBytes(b)
 	return newID.String(), err
 }
 
