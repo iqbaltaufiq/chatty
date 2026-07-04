@@ -7,7 +7,7 @@ import (
 	mw "chatty/middleware"
 )
 
-func NewRouter(db *sql.DB) *http.ServeMux {
+func NewRouter(db *sql.DB) http.Handler {
 	var (
 		mux          = http.NewServeMux()
 		repositories = NewRepositories(db)
