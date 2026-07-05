@@ -13,7 +13,10 @@ func NewRouter(db *sql.DB) http.Handler {
 		repositories = NewRepositories(db)
 		services     = NewServices(repositories)
 		handlers     = NewHandlers(services)
-		authMidw     = mw.NewAuthMiddleware(services.User())
+
+		// middlewares
+		authMidw = mw.NewAuthMiddleware(services.User())
+		commonMw = mw.NewCommonMiddleware(services.User())
 	)
 
 	authHandler := handlers.Auth()
@@ -21,5 +24,8 @@ func NewRouter(db *sql.DB) http.Handler {
 	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMidw.NoAuth))
 	mux.Handle("POST /api/login", mw.Attach(authHandler.Login, authMidw.NoAuth))
 	mux.Handle("POST /api/logout", mw.Attach(authHandler.Logout, authMidw.Protected))
-	return mux
+
+	// attach global middleware to multiplexer
+	muxWithGlobalMw := commonMw.AttachContext(mux)
+	return muxWithGlobalMw
 }
