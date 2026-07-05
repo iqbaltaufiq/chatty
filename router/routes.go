@@ -17,9 +17,10 @@ func NewRouter(db *sql.DB) http.Handler {
 		// middlewares
 		authMidw = mw.NewAuthMiddleware(services.User())
 		commonMw = mw.NewCommonMiddleware(services.User())
-	)
 
-	authHandler := handlers.Auth()
+		// handlers
+		authHandler = handlers.Auth()
+	)
 
 	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMidw.NoAuth))
 	mux.Handle("POST /api/login", mw.Attach(authHandler.Login, authMidw.NoAuth))
