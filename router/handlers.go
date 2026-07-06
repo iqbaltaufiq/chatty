@@ -18,3 +18,9 @@ func (h *handlers) Auth() handler.AuthHandler {
 		h.service.User(),
 	)
 }
+
+func (h *handlers) User() handler.UserHandler {
+	return handler.NewUserHandler(
+		h.service.User(),
+	)
+}
