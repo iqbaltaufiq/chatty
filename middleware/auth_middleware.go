@@ -45,8 +45,8 @@ func (m *authMiddleware) Protected(next http.Handler) http.Handler {
 		username := user.Username
 
 		// attach uuid and username to the context
-		ctxWithUUID := SetCtxUUID(r.Context(), claims.UserID)
-		finalCtx := SetCtxUsername(ctxWithUUID, username)
+		ctxWithUUID := util.SetCtxUUID(r.Context(), claims.UserID)
+		finalCtx := util.SetCtxUsername(ctxWithUUID, username)
 
 		next.ServeHTTP(w, r.Clone(finalCtx))
 	})

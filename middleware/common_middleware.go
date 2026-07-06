@@ -38,8 +38,8 @@ func (m *commonMiddleware) AttachContext(next http.Handler) http.Handler {
 		}
 		username := user.Username
 
-		ctxWithUserID := SetCtxUUID(r.Context(), claims.UserID)
-		ctxWithUsername := SetCtxUsername(ctxWithUserID, username)
+		ctxWithUserID := util.SetCtxUUID(r.Context(), claims.UserID)
+		ctxWithUsername := util.SetCtxUsername(ctxWithUserID, username)
 		next.ServeHTTP(w, r.Clone(ctxWithUsername))
 	})
 }
