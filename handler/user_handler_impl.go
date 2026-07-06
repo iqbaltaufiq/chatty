@@ -17,7 +17,19 @@ func NewUserHandler(userService service.UserService) UserHandler {
 // Get retrieves user's detail identified by username.
 // Password field is excluded from the response.
 func (h *userHandler) Get(w http.ResponseWriter, r *http.Request) {
-	// not yet implemented
+	username := r.PathValue("username")
+	if username == "" {
+		JSONError(w, http.StatusBadRequest, &PathErrNoPathValue{})
+		return
+	}
+	user, err := h.userService.GetUser(r.Context(), username)
+	if err != nil {
+		JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	JSONSuccess(w, http.StatusOK, M{
+		"user": user,
+	})
 }
 
 // GetByUUID retrieves user's detail identified by userID in UUID.
