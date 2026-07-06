@@ -3,7 +3,9 @@ package handler
 import (
 	"net/http"
 
+	"chatty/entity"
 	"chatty/service"
+	"chatty/util"
 )
 
 type userHandler struct {
@@ -14,28 +16,51 @@ func NewUserHandler(userService service.UserService) UserHandler {
 	return &userHandler{userService}
 }
 
-// Get retrieves user's detail identified by username.
+// Get retrieves user's detail identified by username or uuid.
 // Password field is excluded from the response.
+//
+// Username has a maximum length of 32,
+// meanwhile a uuid string has a fixed length of 36.
+// Request is rejected when the path value does not meet either expectation.
 func (h *userHandler) Get(w http.ResponseWriter, r *http.Request) {
-	username := r.PathValue("username")
-	if username == "" {
+	var (
+		user entity.User
+		err  error
+
+		identifier    = r.PathValue("identifier")
+		identifierLen = len(identifier)
+		usernameLimit = identifierLen > 0 && identifierLen <= 32
+		uuidLimit     = identifierLen == 36
+	)
+
+	switch {
+	case identifier == "":
 		JSONError(w, http.StatusBadRequest, &PathErrNoPathValue{})
 		return
-	}
-	user, err := h.userService.GetUser(r.Context(), username)
-	if err != nil {
-		JSONError(w, http.StatusInternalServerError, err)
+	case usernameLimit:
+		user, err = h.userService.GetUser(r.Context(), identifier)
+		if err != nil {
+			JSONError(w, http.StatusInternalServerError, err)
+			return
+		}
+	case uuidLimit:
+		_, err = util.UUIDtoBinary(identifier)
+		if err != nil {
+			JSONError(w, http.StatusBadRequest, err)
+			return
+		}
+		user, err = h.userService.GetUserByUUID(r.Context(), identifier)
+		if err != nil {
+			JSONError(w, http.StatusInternalServerError, err)
+			return
+		}
+	default:
+		JSONError(w, http.StatusInternalServerError, &PathErrInvalidPath{})
 		return
 	}
 	JSONSuccess(w, http.StatusOK, M{
 		"user": user,
 	})
-}
-
-// GetByUUID retrieves user's detail identified by userID in UUID.
-// Password field is excluded from the response.
-func (h *userHandler) GetByUUID(w http.ResponseWriter, r *http.Request) {
-	// not yet implemented
 }
 
 // UpdateFullname only update `fullname` field on the database
