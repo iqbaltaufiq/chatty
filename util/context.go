@@ -10,6 +10,12 @@ var (
 	uuidKey     contextKey
 )
 
+type ContextErrNotFound struct{}
+
+func (e *ContextErrNotFound) Error() string {
+	return "context not found"
+}
+
 // FromCtxUsername takes out username from the context.
 //
 // This getter is necessary since context key is non-exportable.
