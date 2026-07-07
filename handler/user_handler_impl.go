@@ -101,5 +101,31 @@ func (h *userHandler) UpdateFullname(w http.ResponseWriter, r *http.Request) {
 //
 // Allowed file extensions: jpg, jpeg, png, webp, avif, tiff.
 func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
-	// not yet implemented
+	var payload struct {
+		Photo string `json:"photo"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	if payload.Photo == "" {
+		JSONError(w, http.StatusBadRequest, &RequestErrInsufficientBody{})
+		return
+	}
+	username, ok := util.FromCtxUsername(r.Context())
+	if !ok {
+		JSONError(w, http.StatusUnauthorized, &util.ContextErrNotFound{})
+		return
+	}
+	if err := h.userService.UpdatePhoto(
+		r.Context(),
+		username,
+		payload.Photo,
+	); err != nil {
+		JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	JSONSuccess(w, http.StatusOK, M{
+		"message": "photo has been updated successfully",
+	})
 }
