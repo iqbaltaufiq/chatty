@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"chatty/entity"
@@ -66,7 +67,33 @@ func (h *userHandler) Get(w http.ResponseWriter, r *http.Request) {
 // UpdateFullname only update `fullname` field on the database
 // instead of updating the whole row.
 func (h *userHandler) UpdateFullname(w http.ResponseWriter, r *http.Request) {
-	// not yet implemented
+	var payload struct {
+		Fullname string `json:"fullname"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	if payload.Fullname == "" {
+		JSONError(w, http.StatusBadRequest, &RequestErrInsufficientBody{})
+		return
+	}
+	username, ok := util.FromCtxUsername(r.Context())
+	if !ok {
+		JSONError(w, http.StatusUnauthorized, &util.ContextErrNotFound{})
+		return
+	}
+	if err := h.userService.UpdateFullname(
+		r.Context(),
+		username,
+		payload.Fullname,
+	); err != nil {
+		JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	JSONSuccess(w, http.StatusOK, M{
+		"message": "fullname has been updated successfully",
+	})
 }
 
 // UpdatePhoto only update `photo` field on the database
