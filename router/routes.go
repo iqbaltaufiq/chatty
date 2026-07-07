@@ -28,7 +28,7 @@ func NewRouter(db *sql.DB) http.Handler {
 	mux.Handle("POST /api/logout", mw.Attach(authHandler.Logout, authMidw.Protected))
 
 	mux.Handle("GET /api/user/{identifier}/get", mw.Attach(userHandler.Get, authMidw.Protected))
-	mux.Handle("POST /api/user/fullname/update", mw.Attach(userHandler.UpdateFullname, authMidw.Protected))
+	mux.Handle("PATCH /api/user/fullname/update", mw.Attach(userHandler.UpdateFullname, authMidw.Protected))
 	mux.Handle("PATCH /api/user/photo/update", mw.Attach(userHandler.UpdatePhoto, authMidw.Protected))
 
 	// attach global middleware to multiplexer
