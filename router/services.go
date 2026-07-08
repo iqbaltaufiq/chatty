@@ -19,3 +19,7 @@ func (s *services) User() service.UserService {
 func (s *services) Auth() service.AuthService {
 	return service.NewAuthService(s.repo.User())
 }
+
+func (s *services) Room() service.RoomService {
+	return service.NewRoomService(s.repo.Room())
+}
