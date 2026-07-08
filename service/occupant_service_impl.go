@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"chatty/repository"
@@ -29,5 +30,11 @@ func (s *occupantService) Add(ctx context.Context, roomID, username string) erro
 }
 
 func (s *occupantService) Remove(ctx context.Context, roomID, username string) error {
-	// not yet implemented
+	roomID = strings.TrimSpace(roomID)
+	username = strings.TrimSpace(username)
+	exists, err := s.occupantRepo.Exists(ctx, roomID, username)
+	if err != nil || !exists {
+		return sql.ErrNoRows
+	}
+	return s.occupantRepo.Remove(ctx, roomID, username)
 }
