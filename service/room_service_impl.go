@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strings"
 
 	"chatty/entity"
 	"chatty/repository"
@@ -26,5 +27,11 @@ func (s *roomService) Create(ctx context.Context, room entity.Room) (string, err
 
 // UpdateName changes the name of the room.
 func (s *roomService) UpdateName(ctx context.Context, roomID, roomName string) error {
-	// not yet implemented
+	roomName = strings.TrimSpace(roomName)
+	roomID = strings.TrimSpace(roomID)
+
+	if len(roomID) != 6 {
+		return &RoomErrInvalidRoomID{}
+	}
+	return s.roomRepo.UpdateName(ctx, roomID, roomName)
 }
