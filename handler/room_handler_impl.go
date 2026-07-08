@@ -38,5 +38,23 @@ func (h *roomHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *roomHandler) UpdateName(w http.ResponseWriter, r *http.Request) {
-	// not yet implemented
+	var payload struct {
+		RoomID string `json:"room_id"`
+		Name   string `json:"name"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		util.JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	if err := h.roomService.UpdateName(
+		r.Context(),
+		payload.RoomID,
+		payload.Name,
+	); err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	util.JSONSuccess(w, http.StatusOK, util.M{
+		"message": "Room has been updated successfully.",
+	})
 }
