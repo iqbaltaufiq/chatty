@@ -33,7 +33,11 @@ func (s *roomService) Create(ctx context.Context, room entity.Room) (string, err
 		}
 	}
 	room.ID = roomID
-	room.Name = strings.TrimSpace(room.Name)
+	if room.Name == "" {
+		room.Name = "New group"
+	} else {
+		room.Name = strings.TrimSpace(room.Name)
+	}
 	room.IsPrivate = true
 	return roomID, s.roomRepo.Create(ctx, room)
 }
