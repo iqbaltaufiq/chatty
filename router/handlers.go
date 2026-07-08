@@ -24,3 +24,7 @@ func (h *handlers) User() handler.UserHandler {
 		h.service.User(),
 	)
 }
+
+func (h *handlers) Room() handler.RoomHandler {
+	return handler.NewRoomHandler(h.service.Room())
+}
