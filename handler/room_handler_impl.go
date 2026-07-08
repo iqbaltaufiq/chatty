@@ -46,6 +46,10 @@ func (h *roomHandler) UpdateName(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
+	if payload.RoomID == "" || payload.Name == "" {
+		util.JSONError(w, http.StatusBadRequest, &RequestErrInsufficientBody{})
+		return
+	}
 	if err := h.roomService.UpdateName(
 		r.Context(),
 		payload.RoomID,
