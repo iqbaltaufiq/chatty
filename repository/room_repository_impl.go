@@ -47,3 +47,24 @@ func (r *roomRepository) UpdateName(ctx context.Context, roomID, roomName string
 	_, err := stmt.ExecContext(ctx, roomName, roomID)
 	return err
 }
+
+func (r *roomRepository) Exists(ctx context.Context, roomID string) (bool, error) {
+	query := `
+	SELECT COUNT(*) as 'rows'
+	FROM rooms
+	WHERE id = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	rows := 0
+	exists := false
+	if err := stmt.QueryRowContext(ctx, roomID).Scan(&rows); err != nil {
+		return exists, err
+	}
+	if rows > 0 {
+		exists = true
+	}
+	return exists, nil
+}

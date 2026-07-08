@@ -9,4 +9,5 @@ import (
 type RoomRepository interface {
 	Create(ctx context.Context, room entity.Room) error
 	UpdateName(ctx context.Context, roomID, roomName string) error
+	Exists(ctx context.Context, roomID string) (bool, error)
 }
