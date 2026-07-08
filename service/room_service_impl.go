@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"chatty/entity"
@@ -49,6 +50,10 @@ func (s *roomService) UpdateName(ctx context.Context, roomID, roomName string) e
 
 	if len(roomID) != 6 {
 		return &RoomErrInvalidRoomID{}
+	}
+	exists, err := s.roomRepo.Exists(ctx, roomID)
+	if err != nil || !exists {
+		return sql.ErrNoRows
 	}
 	return s.roomRepo.UpdateName(ctx, roomID, roomName)
 }
