@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	"chatty/handler"
 	"chatty/service"
 	"chatty/util"
 )
@@ -25,7 +24,7 @@ func (m *authMiddleware) Protected(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authCookie, err := r.Cookie(util.AuthCookieName)
 		if err != nil {
-			handler.JSONError(w, http.StatusUnauthorized, err)
+			util.JSONError(w, http.StatusUnauthorized, err)
 			return
 		}
 
@@ -34,12 +33,12 @@ func (m *authMiddleware) Protected(next http.Handler) http.Handler {
 		// ** note: username shouldn't be in jwt since it's a modifiable identifier. **
 		claims, err := util.ValidateJWT(authCookie.Value)
 		if err != nil {
-			handler.JSONError(w, http.StatusUnauthorized, err)
+			util.JSONError(w, http.StatusUnauthorized, err)
 			return
 		}
 		user, err := m.userService.GetUserByUUID(r.Context(), claims.UserID)
 		if err != nil {
-			handler.JSONError(w, http.StatusUnauthorized, err)
+			util.JSONError(w, http.StatusUnauthorized, err)
 			return
 		}
 		username := user.Username
@@ -63,6 +62,6 @@ func (m *authMiddleware) NoAuth(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		handler.JSONError(w, http.StatusForbidden, &AuthErrAlreadyLoggedIn{})
+		util.JSONError(w, http.StatusForbidden, &AuthErrAlreadyLoggedIn{})
 	})
 }

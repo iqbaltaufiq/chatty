@@ -36,30 +36,30 @@ func (h *userHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case identifier == "":
-		JSONError(w, http.StatusBadRequest, &PathErrNoPathValue{})
+		util.JSONError(w, http.StatusBadRequest, &PathErrNoPathValue{})
 		return
 	case usernameLimit:
 		user, err = h.userService.GetUser(r.Context(), identifier)
 		if err != nil {
-			JSONError(w, http.StatusInternalServerError, err)
+			util.JSONError(w, http.StatusInternalServerError, err)
 			return
 		}
 	case uuidLimit:
 		_, err = util.UUIDtoBinary(identifier)
 		if err != nil {
-			JSONError(w, http.StatusBadRequest, err)
+			util.JSONError(w, http.StatusBadRequest, err)
 			return
 		}
 		user, err = h.userService.GetUserByUUID(r.Context(), identifier)
 		if err != nil {
-			JSONError(w, http.StatusInternalServerError, err)
+			util.JSONError(w, http.StatusInternalServerError, err)
 			return
 		}
 	default:
-		JSONError(w, http.StatusInternalServerError, &PathErrInvalidPath{})
+		util.JSONError(w, http.StatusInternalServerError, &PathErrInvalidPath{})
 		return
 	}
-	JSONSuccess(w, http.StatusOK, M{
+	util.JSONSuccess(w, http.StatusOK, util.M{
 		"user": user,
 	})
 }
@@ -71,16 +71,16 @@ func (h *userHandler) UpdateFullname(w http.ResponseWriter, r *http.Request) {
 		Fullname string `json:"fullname"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		JSONError(w, http.StatusBadRequest, err)
+		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
 	if payload.Fullname == "" {
-		JSONError(w, http.StatusBadRequest, &RequestErrInsufficientBody{})
+		util.JSONError(w, http.StatusBadRequest, &RequestErrInsufficientBody{})
 		return
 	}
 	username, ok := util.FromCtxUsername(r.Context())
 	if !ok {
-		JSONError(w, http.StatusUnauthorized, &util.ContextErrNotFound{})
+		util.JSONError(w, http.StatusUnauthorized, &util.ContextErrNotFound{})
 		return
 	}
 	if err := h.userService.UpdateFullname(
@@ -88,10 +88,10 @@ func (h *userHandler) UpdateFullname(w http.ResponseWriter, r *http.Request) {
 		username,
 		payload.Fullname,
 	); err != nil {
-		JSONError(w, http.StatusInternalServerError, err)
+		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	JSONSuccess(w, http.StatusOK, M{
+	util.JSONSuccess(w, http.StatusOK, util.M{
 		"message": "fullname has been updated successfully",
 	})
 }
@@ -105,16 +105,16 @@ func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 		Photo string `json:"photo"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		JSONError(w, http.StatusBadRequest, err)
+		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
 	if payload.Photo == "" {
-		JSONError(w, http.StatusBadRequest, &RequestErrInsufficientBody{})
+		util.JSONError(w, http.StatusBadRequest, &RequestErrInsufficientBody{})
 		return
 	}
 	username, ok := util.FromCtxUsername(r.Context())
 	if !ok {
-		JSONError(w, http.StatusUnauthorized, &util.ContextErrNotFound{})
+		util.JSONError(w, http.StatusUnauthorized, &util.ContextErrNotFound{})
 		return
 	}
 	if err := h.userService.UpdatePhoto(
@@ -122,10 +122,10 @@ func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 		username,
 		payload.Photo,
 	); err != nil {
-		JSONError(w, http.StatusInternalServerError, err)
+		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	JSONSuccess(w, http.StatusOK, M{
+	util.JSONSuccess(w, http.StatusOK, util.M{
 		"message": "photo has been updated successfully",
 	})
 }
