@@ -16,6 +16,8 @@ func NewOccupantService(occupantRepo repository.OccupantRepository) OccupantServ
 	return &occupantService{occupantRepo}
 }
 
+// Add checks if the user has not occupied the speficied room
+// and add them into the room.
 func (s *occupantService) Add(ctx context.Context, roomID, username string) error {
 	roomID = strings.TrimSpace(roomID)
 	username = strings.TrimSpace(username)
@@ -29,6 +31,8 @@ func (s *occupantService) Add(ctx context.Context, roomID, username string) erro
 	return s.occupantRepo.Add(ctx, roomID, username)
 }
 
+// Remove checks if the user belongs to the specified room
+// and remove them from the room.
 func (s *occupantService) Remove(ctx context.Context, roomID, username string) error {
 	roomID = strings.TrimSpace(roomID)
 	username = strings.TrimSpace(username)
