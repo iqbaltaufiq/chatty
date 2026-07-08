@@ -6,6 +6,7 @@ import (
 
 	"chatty/entity"
 	"chatty/repository"
+	"chatty/util"
 )
 
 type roomService struct {
@@ -22,7 +23,19 @@ func NewRoomService(roomRepo repository.RoomRepository) RoomService {
 //
 // Returns the unique roomID and nil if success.
 func (s *roomService) Create(ctx context.Context, room entity.Room) (string, error) {
-	// not yet implemented
+	roomID := ""
+	roomIDLength := 6
+	for {
+		roomID = util.GenerateAlphanumeric(roomIDLength)
+		exists, _ := s.roomRepo.Exists(ctx, roomID)
+		if !exists {
+			break
+		}
+	}
+	room.ID = roomID
+	room.Name = strings.TrimSpace(room.Name)
+	room.IsPrivate = true
+	return roomID, s.roomRepo.Create(ctx, room)
 }
 
 // UpdateName changes the name of the room.
