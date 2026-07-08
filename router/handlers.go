@@ -28,3 +28,7 @@ func (h *handlers) User() handler.UserHandler {
 func (h *handlers) Room() handler.RoomHandler {
 	return handler.NewRoomHandler(h.service.Room())
 }
+
+func (h *handlers) Occupant() handler.OccupantHandler {
+	return handler.NewOccupantHandler(h.service.Occupant())
+}
