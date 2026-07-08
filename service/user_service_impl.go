@@ -50,15 +50,7 @@ func (s *userService) UpdateFullname(ctx context.Context, username, fullname str
 //
 // valid: `default.png`, `16228591.jpg`
 func (s *userService) UpdatePhoto(ctx context.Context, username, photo string) error {
-	allowedExt := map[string]struct{}{
-		"jpg":  {},
-		"jpeg": {},
-		"png":  {},
-		"webp": {},
-		"avif": {},
-		"tiff": {},
-	}
-
+	allowedExt := imageExtensions
 	photo = strings.TrimSpace(photo)
 	splitFilename := strings.Split(photo, ".")
 	length := len(splitFilename)
@@ -71,7 +63,8 @@ func (s *userService) UpdatePhoto(ctx context.Context, username, photo string) e
 
 	nameWithoutExt := splitFilename[0]
 	fileExt := splitFilename[1]
-	if _, ok := allowedExt[fileExt]; !ok {
+
+	if !allowedExt.Exists(fileExt) {
 		return errors.New("extension not allowed")
 	}
 
