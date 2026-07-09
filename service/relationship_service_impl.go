@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"chatty/model"
@@ -33,8 +34,21 @@ func (s *relationshipService) Add(ctx context.Context, initiator, target string)
 	return s.relationshipRepo.Add(ctx, initiator, target)
 }
 
+// Remove unfriends both users.
+//
+// Returns error if they haven't become friends yet.
 func (s *relationshipService) Remove(ctx context.Context, initiator, target string) error {
-	// not yet implemented
+	initiator = strings.TrimSpace(initiator)
+	target = strings.TrimSpace(target)
+
+	exists, err := s.relationshipRepo.Exists(ctx, initiator, target)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return sql.ErrNoRows
+	}
+	return s.relationshipRepo.Remove(ctx, initiator, target)
 }
 
 func (s *relationshipService) RemoveByID(ctx context.Context, relationshipID int) error {
