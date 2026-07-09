@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"chatty/model"
+	"chatty/util"
 )
 
 type relationshipRepository struct {
@@ -87,7 +88,46 @@ func (r *relationshipRepository) Exists(ctx context.Context, initiator, target s
 	return exists, nil
 }
 
+// GetFriends retrieves a list of users that have relationship with the specified user.
 func (r *relationshipRepository) GetFriends(ctx context.Context, username string) ([]model.Friend, error) {
-	// not yet implemented
-	return nil, nil
+	query := `
+	SELECT source.id, u.uuid, u.username, u.fullname, u.photo
+	FROM (
+		SELECT r.id, r.initiator as 'friend'
+		FROM relationships r
+		WHERE r.target = ?
+		UNION
+		SELECT r.id, r.target as 'friend'
+		FROM relationships r
+		WHERE r.initiator = ?
+	) AS source
+	JOIN users AS u ON u.username = source.friend
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(ctx, username, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var friends []model.Friend
+	for rows.Next() {
+		var friend model.Friend
+		var binaryUUID []byte
+
+		if err := rows.Scan(
+			&friend.RelationshipID,
+			&binaryUUID,
+			&friend.Username,
+			&friend.Fullname,
+			&friend.Photo,
+		); err != nil {
+			return nil, err
+		}
+		friend.UUID, _ = util.UUIDtoString(binaryUUID)
+		friends = append(friends, friend)
+	}
+	return friends, nil
 }
