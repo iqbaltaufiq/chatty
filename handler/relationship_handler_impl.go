@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"chatty/service"
 	"chatty/util"
@@ -48,7 +49,23 @@ func (h *relationshipHandler) Unfriend(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *relationshipHandler) UnfriendByID(w http.ResponseWriter, r *http.Request) {
-	// wip
+	friendshipID := r.PathValue("friendshipID")
+	if friendshipID == "" {
+		util.JSONError(w, http.StatusBadRequest, &PathErrNoPathValue{})
+		return
+	}
+	i8FriendshipID, err := strconv.Atoi(friendshipID)
+	if err != nil {
+		util.JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	if err := h.relationshipService.RemoveByID(r.Context(), i8FriendshipID); err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	util.JSONSuccess(w, http.StatusOK, util.M{
+		"message": "successfully removed a user from friend list",
+	})
 }
 
 func (h *relationshipHandler) GetFriends(w http.ResponseWriter, r *http.Request) {
