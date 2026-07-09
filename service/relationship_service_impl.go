@@ -56,6 +56,8 @@ func (s *relationshipService) RemoveByID(ctx context.Context, relationshipID int
 	return s.relationshipRepo.RemoveByID(ctx, relationshipID)
 }
 
+// GetFriends retrieves a list of friends that belongs to the user.
 func (s *relationshipService) GetFriends(ctx context.Context, username string) ([]model.Friend, error) {
-	// not yet implemented
+	username = strings.TrimSpace(username)
+	return s.relationshipRepo.GetFriends(ctx, username)
 }
