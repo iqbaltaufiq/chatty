@@ -69,5 +69,14 @@ func (h *relationshipHandler) UnfriendByID(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *relationshipHandler) GetFriends(w http.ResponseWriter, r *http.Request) {
-	// wip
+	username, _ := util.FromCtxUsername(r.Context())
+	friends, err := h.relationshipService.GetFriends(r.Context(), username)
+	if err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	util.JSONSuccess(w, http.StatusOK, util.M{
+		"message": "found",
+		"friends": friends,
+	})
 }
