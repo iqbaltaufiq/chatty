@@ -29,7 +29,7 @@ func (r *relationshipRepository) Add(ctx context.Context, initiator, target stri
 }
 
 // Remove removes relationship between two users.
-func (r *relationshipRepository) Remove(ctx context.Context, friendID int) error {
+func (r *relationshipRepository) RemoveByID(ctx context.Context, relationshipID int) error {
 	query := `
 	DELETE FROM relationships
 	WHERE id = ?
@@ -38,7 +38,7 @@ func (r *relationshipRepository) Remove(ctx context.Context, friendID int) error
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	_, err := stmt.ExecContext(ctx, friendID)
+	_, err := stmt.ExecContext(ctx, relationshipID)
 	return err
 }
 
