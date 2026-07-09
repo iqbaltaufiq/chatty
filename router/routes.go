@@ -19,9 +19,10 @@ func NewRouter(db *sql.DB) http.Handler {
 		commonMw = mw.NewCommonMiddleware(services.User())
 
 		// handlers
-		authHandler = handlers.Auth()
-		userHandler = handlers.User()
-		roomHandler = handlers.Room()
+		authHandler     = handlers.Auth()
+		userHandler     = handlers.User()
+		roomHandler     = handlers.Room()
+		occupantHandler = handlers.Occupant()
 	)
 
 	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMidw.NoAuth))
@@ -34,6 +35,8 @@ func NewRouter(db *sql.DB) http.Handler {
 
 	mux.Handle("POST /api/room/new", mw.Attach(roomHandler.Create, authMidw.Protected))
 	mux.Handle("PATCH /api/room/name/update", mw.Attach(roomHandler.UpdateName, authMidw.Protected))
+
+	mux.Handle("POST /api/occupant/add", mw.Attach(occupantHandler.Add, authMidw.Protected))
 
 	// attach global middleware to multiplexer
 	muxWithGlobalMw := commonMw.AttachContext(mux)
