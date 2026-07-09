@@ -32,3 +32,7 @@ func (h *handlers) Room() handler.RoomHandler {
 func (h *handlers) Occupant() handler.OccupantHandler {
 	return handler.NewOccupantHandler(h.service.Occupant())
 }
+
+func (h *handlers) Relationship() handler.RelationshipHandler {
+	return handler.NewRelationshipHandler(h.service.Relationship())
+}

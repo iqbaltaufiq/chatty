@@ -27,3 +27,7 @@ func (s *services) Room() service.RoomService {
 func (s *services) Occupant() service.OccupantService {
 	return service.NewOccupantService(s.repo.Occupant())
 }
+
+func (s *services) Relationship() service.RelationshipService {
+	return service.NewRelationshipService(s.repo.Relationship())
+}
