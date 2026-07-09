@@ -45,7 +45,7 @@ func (r *relationshipRepository) Remove(ctx context.Context, friendID int) error
 // Exists checks if two users have befriended with each other.
 func (r *relationshipRepository) Exists(ctx context.Context, initiator, target string) (bool, error) {
 	query := `
-	SELECT COUNT(*) as rowsCount
+	SELECT COUNT(*) as 'rowsCount'
 	FROM relationships
 	WHERE initiator = ? AND target = ? OR initiator = ? AND target = ?
 	LIMIT 1
