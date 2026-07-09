@@ -43,7 +43,7 @@ func (r *occupantRepository) Remove(ctx context.Context, roomID, username string
 // Exists checks if user exists in the specified room
 func (r *occupantRepository) Exists(ctx context.Context, roomID, username string) (bool, error) {
 	query := `
-	SELECT COUNT(*) as rows
+	SELECT COUNT(*) as 'rows'
 	FROM occupants
 	WHERE room_id = ? AND username = ?
 	LIMIT 1
