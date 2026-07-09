@@ -37,6 +37,7 @@ func NewRouter(db *sql.DB) http.Handler {
 	mux.Handle("PATCH /api/room/name/update", mw.Attach(roomHandler.UpdateName, authMidw.Protected))
 
 	mux.Handle("POST /api/occupant/add", mw.Attach(occupantHandler.Add, authMidw.Protected))
+	mux.Handle("DELETE /api/occupant/remove", mw.Attach(occupantHandler.Remove, authMidw.Protected))
 
 	// attach global middleware to multiplexer
 	muxWithGlobalMw := commonMw.AttachContext(mux)
