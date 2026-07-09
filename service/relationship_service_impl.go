@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strings"
 
 	"chatty/model"
 	"chatty/repository"
@@ -15,8 +16,21 @@ func NewRelationshipService(relationshipRepo repository.RelationshipRepository) 
 	return &relationshipService{relationshipRepo}
 }
 
+// Add befriends initiator with the target.
+//
+// Returns error if they are already friends.
 func (s *relationshipService) Add(ctx context.Context, initiator, target string) error {
-	// not yet implemented
+	initiator = strings.TrimSpace(initiator)
+	target = strings.TrimSpace(target)
+
+	exists, err := s.relationshipRepo.Exists(ctx, initiator, target)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return &RowsErrAlreadyExists{}
+	}
+	return s.relationshipRepo.Add(ctx, initiator, target)
 }
 
 func (s *relationshipService) Remove(ctx context.Context, initiator, target string) error {
