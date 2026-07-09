@@ -28,6 +28,23 @@ func (r *relationshipRepository) Add(ctx context.Context, initiator, target stri
 	return err
 }
 
+func (r *relationshipRepository) Remove(ctx context.Context, self, target string) error {
+	query := `
+	DELETE FROM relationships
+	WHERE initiator = ? AND target = ? OR initiator = ? AND target = ?
+	LIMIT 1
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	_, err := stmt.ExecContext(
+		ctx,
+		self, target,
+		target, self,
+	)
+	return err
+}
+
 // Remove removes relationship between two users.
 func (r *relationshipRepository) RemoveByID(ctx context.Context, relationshipID int) error {
 	query := `
