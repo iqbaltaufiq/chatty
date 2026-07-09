@@ -51,8 +51,9 @@ func (s *relationshipService) Remove(ctx context.Context, initiator, target stri
 	return s.relationshipRepo.Remove(ctx, initiator, target)
 }
 
+// RemoveByID unfriends two users referenced by their relationshipID.
 func (s *relationshipService) RemoveByID(ctx context.Context, relationshipID int) error {
-	// not yet implemented
+	return s.relationshipRepo.RemoveByID(ctx, relationshipID)
 }
 
 func (s *relationshipService) GetFriends(ctx context.Context, username string) ([]model.Friend, error) {
