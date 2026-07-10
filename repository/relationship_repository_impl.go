@@ -65,17 +65,14 @@ func (r *relationshipRepository) Exists(ctx context.Context, initiator, target s
 	query := `
 	SELECT COUNT(*) as 'rowsCount'
 	FROM relationships
-	WHERE initiator = ? AND target = ? OR initiator = ? AND target = ?
+	WHERE (initiator = ? AND target = ?) OR (initiator = ? AND target = ?)
 	LIMIT 1
 	`
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	row := stmt.QueryRowContext(
-		ctx,
-		initiator, target,
-		target, initiator,
-	)
+	args := []any{initiator, target, target, initiator}
+	row := stmt.QueryRowContext(ctx, args...)
 
 	exists := false
 	rowsCount := 0
