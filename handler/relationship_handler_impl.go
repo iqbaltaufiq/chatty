@@ -49,17 +49,17 @@ func (h *relationshipHandler) Unfriend(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *relationshipHandler) UnfriendByID(w http.ResponseWriter, r *http.Request) {
-	friendshipID := r.PathValue("friendshipID")
-	if friendshipID == "" {
+	relationshipID := r.PathValue("relationshipID")
+	if relationshipID == "" {
 		util.JSONError(w, http.StatusBadRequest, &PathErrNoPathValue{})
 		return
 	}
-	i8FriendshipID, err := strconv.Atoi(friendshipID)
+	i8relationshipID, err := strconv.Atoi(relationshipID)
 	if err != nil {
 		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
-	if err := h.relationshipService.RemoveByID(r.Context(), i8FriendshipID); err != nil {
+	if err := h.relationshipService.RemoveByID(r.Context(), i8relationshipID); err != nil {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
