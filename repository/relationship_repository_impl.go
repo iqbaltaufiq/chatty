@@ -48,16 +48,36 @@ func (r *relationshipRepository) Remove(ctx context.Context, self, target string
 
 // Remove removes relationship between two users.
 func (r *relationshipRepository) RemoveByID(ctx context.Context, relationshipID int) error {
-	query := `
+	fetchQuery := `
+	SELECT COUNT(*) AS 'rowCount'
+	FROM relationships
+	WHERE id = ? AND (initiator = ? OR target = ?)
+	LIMIT 1
+	`
+	deleteQuery := `
 	DELETE FROM relationships
 	WHERE id = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
-	defer stmt.Close()
+	tx, _ := r.db.Begin()
+	defer tx.Rollback()
 
-	_, err := stmt.ExecContext(ctx, relationshipID)
-	return err
+	var (
+		self, _   = util.FromCtxUsername(ctx)
+		rowCount  = 0
+		fetchArgs = []any{relationshipID, self, self}
+	)
+	if err := tx.QueryRowContext(ctx, fetchQuery, fetchArgs...).
+		Scan(&rowCount); err != nil {
+		return err
+	}
+	if rowCount == 0 {
+		return &RelationshipErrDoesNotBelong{}
+	}
+	if _, err := tx.ExecContext(ctx, deleteQuery, relationshipID); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 // Exists checks if two users have befriended with each other.
