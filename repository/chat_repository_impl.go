@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"chatty/entity"
 )
@@ -16,21 +17,32 @@ func NewChatRepository(db *sql.DB) ChatRepository {
 }
 
 // Save stores a message into database.
-func (r *chatRepository) Save(ctx context.Context, chat entity.Chat) error {
+func (r *chatRepository) Save(ctx context.Context, chat entity.Chat) (entity.Chat, error) {
 	query := `
-	INSERT INTO chats (username, message, room_id)
-	VALUES (?,?,?)
+	INSERT INTO chats (username, room_id, message, created_at, updated_at)
+	VALUES (?,?,?,?,?)
 	`
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	_, err := stmt.ExecContext(
+	timeNowUTC := time.Now().UTC()
+	chat.CreatedAt = &timeNowUTC
+	chat.UpdatedAt = &timeNowUTC
+
+	row, err := stmt.ExecContext(
 		ctx,
 		chat.Username,
-		chat.Message,
 		chat.RoomID,
+		chat.Message,
+		chat.CreatedAt,
+		chat.UpdatedAt,
 	)
-	return err
+	if err != nil {
+		return entity.Chat{}, err
+	}
+	chat.ID, _ = row.LastInsertId()
+
+	return chat, err
 }
 
 // Delete removes a message from database.
