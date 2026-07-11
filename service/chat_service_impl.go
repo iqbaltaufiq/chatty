@@ -25,17 +25,17 @@ func NewChatService(
 }
 
 // Save stores new message into database.
-func (s *chatService) Save(ctx context.Context, chat entity.Chat) error {
+func (s *chatService) Save(ctx context.Context, chat entity.Chat) (entity.Chat, error) {
 	chat.Username = strings.TrimSpace(chat.Username)
 	if int8(len(chat.RoomID)) != entity.RoomIDLength {
-		return &RoomErrInvalidRoomID{}
+		return entity.Chat{}, &RoomErrInvalidRoomID{}
 	}
 	exists, err := s.occupantRepo.Exists(ctx, chat.RoomID, chat.Username)
 	if err != nil {
-		return err
+		return entity.Chat{}, err
 	}
 	if !exists {
-		return sql.ErrNoRows
+		return entity.Chat{}, sql.ErrNoRows
 	}
 	return s.chatRepo.Save(ctx, chat)
 }
