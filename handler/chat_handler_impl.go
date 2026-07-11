@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"chatty/service"
+	"chatty/util"
 )
 
 type chatHandler struct {
@@ -15,7 +16,18 @@ func NewChatHandler(chatService service.ChatService) ChatHandler {
 }
 
 func (h *chatHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	// wip
+	roomID := r.PathValue("roomID")
+
+	chats, err := h.chatService.GetAll(r.Context(), roomID)
+	if err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	util.JSONSuccess(w, http.StatusOK, util.M{
+		"message":   "found",
+		"rowsCount": len(chats),
+		"chats":     chats,
+	})
 }
 
 func (h *chatHandler) Delete(w http.ResponseWriter, r *http.Request) {
