@@ -13,6 +13,8 @@ type Client struct {
 	Username string
 }
 
+type Audience []string
+
 type Message struct {
 	ID        int        `json:"id,omitempty"`
 	Username  string     `json:"username,omitempty"`
