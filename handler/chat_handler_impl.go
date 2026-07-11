@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"chatty/service"
 	"chatty/util"
@@ -31,5 +32,18 @@ func (h *chatHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *chatHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	// wip
+	strChatID := r.PathValue("chatID")
+
+	chatID, err := strconv.ParseInt(strChatID, 10, 64)
+	if err != nil {
+		util.JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	if err := h.chatService.Delete(r.Context(), int(chatID)); err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	util.JSONSuccess(w, http.StatusOK, util.M{
+		"message": "message has been deleted successfully",
+	})
 }
