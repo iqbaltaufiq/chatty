@@ -15,7 +15,7 @@ func NewRouter(db *sql.DB) http.Handler {
 		handlers     = NewHandlers(services)
 
 		// middlewares
-		authMidw = mw.NewAuthMiddleware(services.User())
+		authMw   = mw.NewAuthMiddleware(services.User())
 		commonMw = mw.NewCommonMiddleware(services.User())
 
 		// handlers
@@ -26,24 +26,24 @@ func NewRouter(db *sql.DB) http.Handler {
 		relationshipHandler = handlers.Relationship()
 	)
 
-	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMidw.NoAuth))
-	mux.Handle("POST /api/login", mw.Attach(authHandler.Login, authMidw.NoAuth))
-	mux.Handle("POST /api/logout", mw.Attach(authHandler.Logout, authMidw.Protected))
+	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMw.NoAuth))
+	mux.Handle("POST /api/login", mw.Attach(authHandler.Login, authMw.NoAuth))
+	mux.Handle("POST /api/logout", mw.Attach(authHandler.Logout, authMw.Protected))
 
-	mux.Handle("GET /api/user/{identifier}/get", mw.Attach(userHandler.Get, authMidw.Protected))
-	mux.Handle("PATCH /api/user/fullname/update", mw.Attach(userHandler.UpdateFullname, authMidw.Protected))
-	mux.Handle("PATCH /api/user/photo/update", mw.Attach(userHandler.UpdatePhoto, authMidw.Protected))
+	mux.Handle("GET /api/user/{identifier}/get", mw.Attach(userHandler.Get, authMw.Protected))
+	mux.Handle("PATCH /api/user/fullname/update", mw.Attach(userHandler.UpdateFullname, authMw.Protected))
+	mux.Handle("PATCH /api/user/photo/update", mw.Attach(userHandler.UpdatePhoto, authMw.Protected))
 
-	mux.Handle("POST /api/room/new", mw.Attach(roomHandler.Create, authMidw.Protected))
-	mux.Handle("PATCH /api/room/name/update", mw.Attach(roomHandler.UpdateName, authMidw.Protected))
+	mux.Handle("POST /api/room/new", mw.Attach(roomHandler.Create, authMw.Protected))
+	mux.Handle("PATCH /api/room/name/update", mw.Attach(roomHandler.UpdateName, authMw.Protected))
 
-	mux.Handle("POST /api/occupant/add", mw.Attach(occupantHandler.Add, authMidw.Protected))
-	mux.Handle("DELETE /api/occupant/remove", mw.Attach(occupantHandler.Remove, authMidw.Protected))
+	mux.Handle("POST /api/occupant/add", mw.Attach(occupantHandler.Add, authMw.Protected))
+	mux.Handle("DELETE /api/occupant/remove", mw.Attach(occupantHandler.Remove, authMw.Protected))
 
-	mux.Handle("GET /api/relationship/all", mw.Attach(relationshipHandler.GetFriends, authMidw.Protected))
-	mux.Handle("POST /api/relationship/{username}/add", mw.Attach(relationshipHandler.Befriend, authMidw.Protected))
-	mux.Handle("DELETE /api/relationship/{username}/remove", mw.Attach(relationshipHandler.Unfriend, authMidw.Protected))
-	mux.Handle("DELETE /api/relationship/id/{relationshipID}/remove", mw.Attach(relationshipHandler.UnfriendByID, authMidw.Protected))
+	mux.Handle("GET /api/relationship/all", mw.Attach(relationshipHandler.GetFriends, authMw.Protected))
+	mux.Handle("POST /api/relationship/{username}/add", mw.Attach(relationshipHandler.Befriend, authMw.Protected))
+	mux.Handle("DELETE /api/relationship/{username}/remove", mw.Attach(relationshipHandler.Unfriend, authMw.Protected))
+	mux.Handle("DELETE /api/relationship/id/{relationshipID}/remove", mw.Attach(relationshipHandler.UnfriendByID, authMw.Protected))
 
 	// attach global middleware to multiplexer
 	muxWithGlobalMw := commonMw.AttachContext(mux)
