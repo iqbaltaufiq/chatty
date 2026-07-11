@@ -23,6 +23,10 @@ func (h *relationshipHandler) Befriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	self, _ := util.FromCtxUsername(r.Context())
+	if target == self {
+		util.JSONError(w, http.StatusBadRequest, &PathErrInvalidPath{})
+		return
+	}
 	if err := h.relationshipService.Add(r.Context(), self, target); err != nil {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
@@ -39,6 +43,10 @@ func (h *relationshipHandler) Unfriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	self, _ := util.FromCtxUsername(r.Context())
+	if target == self {
+		util.JSONError(w, http.StatusBadRequest, &PathErrInvalidPath{})
+		return
+	}
 	if err := h.relationshipService.Remove(r.Context(), self, target); err != nil {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
