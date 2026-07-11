@@ -31,3 +31,7 @@ func (s *services) Occupant() service.OccupantService {
 func (s *services) Relationship() service.RelationshipService {
 	return service.NewRelationshipService(s.repo.Relationship())
 }
+
+func (s *services) Chat() service.ChatService {
+	return service.NewChatService(s.repo.Chat(), s.repo.Occupant())
+}

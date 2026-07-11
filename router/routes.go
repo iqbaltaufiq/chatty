@@ -24,6 +24,7 @@ func NewRouter(db *sql.DB) http.Handler {
 		roomHandler         = handlers.Room()
 		occupantHandler     = handlers.Occupant()
 		relationshipHandler = handlers.Relationship()
+		chatHandler         = handlers.Chat()
 	)
 
 	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMw.NoAuth))
