@@ -8,6 +8,7 @@ import (
 
 	"chatty/entity"
 	"chatty/repository"
+	"chatty/util"
 )
 
 type chatService struct {
@@ -45,8 +46,18 @@ func (s *chatService) Save(ctx context.Context, chat entity.Chat) (entity.Chat, 
 	return s.chatRepo.Save(ctx, chat)
 }
 
+// GetAll retrieves all of the chats belong to the specified room.
 func (s *chatService) GetAll(ctx context.Context, roomID string) ([]entity.Chat, error) {
-	// wip
+	if int8(len(roomID)) != entity.RoomIDLength {
+		return nil, &RoomErrInvalidRoomID{}
+	}
+	username, _ := util.FromCtxUsername(ctx)
+
+	exists, err := s.occupantRepo.Exists(ctx, roomID, username)
+	if err != nil || !exists {
+		return nil, sql.ErrNoRows
+	}
+	return s.chatRepo.GetAll(ctx, roomID)
 }
 
 func (s *chatService) Delete(ctx context.Context, chatID int) error {
