@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"chatty/entity"
+	"chatty/util"
 )
 
 type chatRepository struct {
@@ -45,13 +45,14 @@ func (r *chatRepository) Save(ctx context.Context, chat entity.Chat) (entity.Cha
 func (r *chatRepository) Delete(ctx context.Context, chatID int) error {
 	query := `
 	DELETE FROM chats
-	WHERE id = ?
+	WHERE id = ? AND username = ?
 	LIMIT 1
 	`
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	_, err := stmt.ExecContext(ctx, chatID)
+	username, _ := util.FromCtxUsername(ctx)
+	_, err := stmt.ExecContext(ctx, chatID, username)
 	return err
 }
 
