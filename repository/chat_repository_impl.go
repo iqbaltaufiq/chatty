@@ -52,7 +52,13 @@ func (r *chatRepository) Delete(ctx context.Context, chatID int) error {
 	defer stmt.Close()
 
 	username, _ := util.FromCtxUsername(ctx)
-	_, err := stmt.ExecContext(ctx, chatID, username)
+	row, err := stmt.ExecContext(ctx, chatID, username)
+	if err != nil {
+		return err
+	}
+	if rowsAffected, _ := row.RowsAffected(); rowsAffected < 1 {
+		return sql.ErrNoRows
+	}
 	return err
 }
 
