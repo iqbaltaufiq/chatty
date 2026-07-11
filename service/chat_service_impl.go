@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+	"time"
 
 	"chatty/entity"
 	"chatty/repository"
@@ -37,6 +38,10 @@ func (s *chatService) Save(ctx context.Context, chat entity.Chat) (entity.Chat, 
 	if !exists {
 		return entity.Chat{}, sql.ErrNoRows
 	}
+	timeNowUTC := time.Now().UTC()
+	chat.CreatedAt = &timeNowUTC
+	chat.UpdatedAt = &timeNowUTC
+
 	return s.chatRepo.Save(ctx, chat)
 }
 

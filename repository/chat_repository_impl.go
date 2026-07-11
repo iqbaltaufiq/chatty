@@ -25,10 +25,6 @@ func (r *chatRepository) Save(ctx context.Context, chat entity.Chat) (entity.Cha
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	timeNowUTC := time.Now().UTC()
-	chat.CreatedAt = &timeNowUTC
-	chat.UpdatedAt = &timeNowUTC
-
 	row, err := stmt.ExecContext(
 		ctx,
 		chat.Username,
