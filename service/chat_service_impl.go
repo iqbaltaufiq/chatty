@@ -60,6 +60,7 @@ func (s *chatService) GetAll(ctx context.Context, roomID string) ([]entity.Chat,
 	return s.chatRepo.GetAll(ctx, roomID)
 }
 
+// Delete deletes a chat specified by chatID.
 func (s *chatService) Delete(ctx context.Context, chatID int) error {
-	// wip
+	return s.chatRepo.Delete(ctx, chatID)
 }
