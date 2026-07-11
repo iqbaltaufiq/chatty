@@ -4,7 +4,14 @@ import (
 	"encoding/json"
 	"log"
 	"time"
+
+	"golang.org/x/net/websocket"
 )
+
+type Client struct {
+	Conn     *websocket.Conn
+	Username string
+}
 
 type Message struct {
 	ID        int        `json:"id,omitempty"`
