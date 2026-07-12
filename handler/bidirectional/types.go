@@ -3,9 +3,10 @@ package bidirectional
 import (
 	"encoding/json"
 	"log"
-	"time"
 
 	"golang.org/x/net/websocket"
+
+	"chatty/entity"
 )
 
 type Client struct {
@@ -16,13 +17,8 @@ type Client struct {
 type Audience []string
 
 type Message struct {
-	ID        int        `json:"id,omitempty"`
-	Username  string     `json:"username,omitempty"`
-	RoomID    string     `json:"room_id,omitempty"`
-	Message   string     `json:"message,omitempty"`
-	CreatedAt *time.Time `json:"created_at,omitempty"`
-	UpdatedAt *time.Time `json:"updated_at,omitempty"`
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	entity.Chat
+	Audience `json:"audience,omitempty"`
 }
 
 func (m *Message) Stringify() string {
