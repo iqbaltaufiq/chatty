@@ -30,6 +30,7 @@ func main() {
 	defer db.Close()
 
 	websocketHub := bidirectional.NewHub()
+	go websocketHub.Run()
 
 	router := router.NewRouter(db, websocketHub)
 	server := new(http.Server)
