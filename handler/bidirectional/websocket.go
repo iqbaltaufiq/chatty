@@ -1,6 +1,8 @@
 package bidirectional
 
 import (
+	"log"
+
 	"golang.org/x/net/websocket"
 )
 
@@ -29,9 +31,11 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.connectQ:
 			h.clients[client.Username] = client.Conn
+			log.Printf("User joined your ws. [Population: %d]\n", len(h.clients))
 		case client := <-h.disconnectQ:
 			client.Conn.Close()
 			delete(h.clients, client.Username)
+			log.Printf("User left your ws. [Population: %d]\n", len(h.clients))
 		case message := <-h.broadcastQ:
 			sendMessage(h, message)
 		}
