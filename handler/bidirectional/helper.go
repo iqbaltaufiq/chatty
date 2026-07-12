@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-func sendMessage(h *hub, message Message) {
+func sendMessage(h *Hub, message Message) {
 	// broadcast this message to the audience
 	for _, aud := range message.Audiences {
 		conn, exists := h.clients[aud]
