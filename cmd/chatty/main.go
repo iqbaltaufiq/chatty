@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"chatty/database"
+	"chatty/handler/bidirectional"
 	"chatty/router"
 )
 
@@ -28,7 +29,9 @@ func main() {
 	}
 	defer db.Close()
 
-	router := router.NewRouter(db)
+	websocketHub := bidirectional.NewHub()
+
+	router := router.NewRouter(db, websocketHub)
 	server := new(http.Server)
 	server.Addr = serverAddr
 	server.Handler = router

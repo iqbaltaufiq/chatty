@@ -4,10 +4,11 @@ import (
 	"database/sql"
 	"net/http"
 
+	"chatty/handler/bidirectional"
 	mw "chatty/middleware"
 )
 
-func NewRouter(db *sql.DB) http.Handler {
+func NewRouter(db *sql.DB, wsHub *bidirectional.Hub) http.Handler {
 	var (
 		mux          = http.NewServeMux()
 		repositories = NewRepositories(db)
