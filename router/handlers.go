@@ -1,13 +1,17 @@
 package router
 
-import "chatty/handler"
+import (
+	"chatty/handler"
+	"chatty/handler/bidirectional"
+)
 
 type handlers struct {
 	service *services
+	wsHub   *bidirectional.Hub
 }
 
-func NewHandlers(service *services) *handlers {
-	return &handlers{service}
+func NewHandlers(service *services, wsHub *bidirectional.Hub) *handlers {
+	return &handlers{service, wsHub}
 }
 
 // Write down all of the handlers as method name below.
@@ -39,4 +43,8 @@ func (h *handlers) Relationship() handler.RelationshipHandler {
 
 func (h *handlers) Chat() handler.ChatHandler {
 	return handler.NewChatHandler(h.service.Chat())
+}
+
+func (h *handlers) Websocket() handler.WebsocketHandler {
+	return handler.NewWebsocketHandler(h.wsHub)
 }
