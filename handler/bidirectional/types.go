@@ -16,7 +16,7 @@ type Client struct {
 
 type Message struct {
 	entity.Chat
-	Audience []string `json:"audience,omitempty"`
+	Audiences []string `json:"audiences,omitempty"`
 }
 
 func (m *Message) Stringify() string {
