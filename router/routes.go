@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 
+	"golang.org/x/net/websocket"
+
 	"chatty/handler/bidirectional"
 	mw "chatty/middleware"
 )
@@ -13,7 +15,7 @@ func NewRouter(db *sql.DB, wsHub *bidirectional.Hub) http.Handler {
 		mux          = http.NewServeMux()
 		repositories = NewRepositories(db)
 		services     = NewServices(repositories)
-		handlers     = NewHandlers(services)
+		handlers     = NewHandlers(services, wsHub)
 
 		// middlewares
 		authMw   = mw.NewAuthMiddleware(services.User())
@@ -26,7 +28,10 @@ func NewRouter(db *sql.DB, wsHub *bidirectional.Hub) http.Handler {
 		occupantHandler     = handlers.Occupant()
 		relationshipHandler = handlers.Relationship()
 		chatHandler         = handlers.Chat()
+		websocketHandler    = handlers.Websocket()
 	)
+
+	mux.Handle("/websocket", websocket.Handler(websocketHandler.Connect))
 
 	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMw.NoAuth))
 	mux.Handle("POST /api/login", mw.Attach(authHandler.Login, authMw.NoAuth))
