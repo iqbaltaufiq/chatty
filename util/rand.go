@@ -16,7 +16,7 @@ func alphabets() alphabet {
 	}
 }
 
-func (s alphabet) RandomAlphabet() string {
+func (s alphabet) randomAlphabet() string {
 	return s[rand.IntN(len(s))]
 }
 
@@ -24,12 +24,12 @@ func numbers() number {
 	return number{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 }
 
-func (n number) RandomNumber() int {
+func (n number) randomNumber() int {
 	return n[rand.IntN(len(n))]
 }
 
-func (n number) RandomNumberToString() string {
-	return strconv.Itoa(n.RandomNumber())
+func (n number) randomNumberToString() string {
+	return strconv.Itoa(n.randomNumber())
 }
 
 func GenerateAlphanumeric(length int) string {
@@ -42,12 +42,12 @@ func GenerateAlphanumeric(length int) string {
 	)
 	for range length {
 		// even = alphabet; odd = number.
-		n = numbers.RandomNumber()
-		alphaOrNumber = n%2 == 0 && n != 0
+		n = numbers.randomNumber()
+		alphaOrNumber = n%2 == 0
 		if alphaOrNumber {
-			random = random + alphabets.RandomAlphabet()
+			random += alphabets.randomAlphabet()
 		} else {
-			random = random + numbers.RandomNumberToString()
+			random += numbers.randomNumberToString()
 		}
 	}
 	return random
