@@ -19,7 +19,7 @@ func (h *pageHandler) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *pageHandler) Login(w http.ResponseWriter, r *http.Request) {
-	// wip
+	http.ServeFile(w, r, "public/login.html")
 }
 
 func (h *pageHandler) Register(w http.ResponseWriter, r *http.Request) {
