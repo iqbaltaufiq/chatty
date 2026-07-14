@@ -48,3 +48,7 @@ func (h *handlers) Chat() handler.ChatHandler {
 func (h *handlers) Websocket() handler.WebsocketHandler {
 	return handler.NewWebsocketHandler(h.wsHub, h.service.Chat())
 }
+
+func (h *handlers) Page() handler.PageHandler {
+	return handler.NewPageHandler(h.service.User())
+}
