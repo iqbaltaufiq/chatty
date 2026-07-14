@@ -32,6 +32,8 @@ func NewRouter(db *sql.DB, wsHub *bidirectional.Hub) http.Handler {
 		pageHandler         = handlers.Page()
 	)
 
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("public/static"))))
+
 	mux.Handle("/websocket", websocket.Handler(websocketHandler.Connect))
 
 	mux.Handle("GET /login", mw.Attach(pageHandler.Login, authMw.NoAuth))
