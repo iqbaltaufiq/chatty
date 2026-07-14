@@ -1,0 +1,62 @@
+:root {
+    /* universal font family */
+    --root-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+
+    /* midnight purple palette */
+    --midnight-purple-1: #3a015c;
+    --midnight-purple-2: #32004f;
+    --midnight-purple-3: #220135;
+    --midnight-purple-4: #190028;
+    --midnight-purple-5: #11001c;
+
+    /* forest green palette */
+    --forest-green-1: #18230F;
+    --forest-green-2: #27391C;
+    --forest-green-3: #255F38;
+    --forest-green-4: #1F7D53;
+
+    /* jungle green palette */
+    --jungle-green-1: #0b2c24;
+    --jungle-green-2: #0f392b;
+    --jungle-green-3: #134632;
+    --jungle-green-4: #185339;
+    --jungle-green-5: #1c603f;
+    --jungle-green-6: #206d46;
+    --jungle-green-7: #247a4d;
+
+    /* universal color */
+    --white: #fafafa;
+    --black: #333;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--root-font-family);
+}
+
+a {
+    text-decoration: none;
+    color: var(--white);
+}
+
+.btn {
+    background: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.btn-borderless {
+    border: none;
+    border-radius: 0px;
+}
+
+.btn-block {
+    display: block;
+
+    &:hover {
+        background: var(--midnight-purple-1);
+    }
+}
