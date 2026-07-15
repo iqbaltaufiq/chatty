@@ -26,7 +26,8 @@
     --jungle-green-7: #247a4d;
 
     /* universal color */
-    --white: #fafafa;
+    /* --white: #fafafa; */
+    --white: gainsboro;
     --black: #333;
 }
 
@@ -75,3 +76,15 @@ a {
     border-radius: 50%;
 }
 
+::-webkit-scrollbar {
+    background: none;
+}
+
+::-webkit-scrollbar-track {
+    background: none;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--midnight-purple-1);
+    border: 2px solid var(--midnight-purple-5);
+    border-radius: var(--border-radius);
+}
