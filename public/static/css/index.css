@@ -1,7 +1,9 @@
 :root {
     --border-radius: 0.5rem;
     --sidebar-width-lg: 20%;
+    --sidebar-width-sm: max-content;
     --main-width-lg: 80%;
+    --main-width-sm: auto;
     --chat-header-height: 10%;
     --chat-header-photo-height: calc(100% - 1.25rem);
     --chat-header-name-size: 1.25rem;
@@ -19,7 +21,130 @@
 }
 aside {
     grid-area: sidebar;
+    display: grid;
+    grid-template-rows: max-content auto max-content;
+
     background: var(--midnight-purple-5);
+}
+
+.sidebar-header {
+    /* border: 1px dashed salmon; */
+    padding: 1rem;
+    text-align: center;
+}
+.brand {
+    color: var(--white);
+    /* font-size: 2rem; */
+    font-size: clamp(1rem, 4vw, 2rem);
+}
+.btn-new-chat {
+    color: var(--white);
+    border: 1px solid var(--white);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    text-align: center;
+    font-size: x-small;
+    margin-top: 1rem;
+
+    &:hover {
+        background: var(--white);
+        color: var(--midnight-purple-5);
+    }
+}
+.chat-list {
+    /* border: 1px dashed limegreen; */
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 0.25rem;
+    }
+    &::-webkit-scrollbar-thumb {
+        border: none;
+    }
+}
+.chat-card {
+    /* border: 1px dashed orange; */
+    display: grid;
+    grid-template-columns: max-content auto;
+    grid-template-areas: "photo info";
+    gap: 1rem;
+    padding: 0.5rem;
+
+    cursor: pointer;
+
+    &:hover {
+        background: var(--midnight-purple-4);
+    }
+}
+.card-image {
+    grid-area: photo;
+    height: 50px;
+}
+.card-info {
+    grid-area: info;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    & > .card-name {
+        color: var(--white);
+        font-size: 1rem;
+    }
+    & > .card-message {
+        color: grey;
+        font-size: 0.8rem;
+    }
+    & > .card-name, & > .card-message {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-block: 0.25rem;
+    }
+}
+.user-area {
+    /* border: 1px dashed aquamarine; */
+    padding: 1rem 0.5rem;
+}
+.user-card {
+    background: var(--midnight-purple-1);
+    border-radius: var(--border-radius);
+
+    display: grid;
+    grid-template-columns: max-content auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    position: relative;
+
+    .user-group {
+        position: relative;
+        width: 100%;
+        & #menu-btn {
+            z-index: 99;
+            position: absolute;
+            width: 50%;
+            bottom: 0;
+            right: -0.5rem;
+        }
+        & svg {
+            width: 80%;
+            background: var(--white);
+            border-radius: 50%;
+        }
+    }
+
+    .user-photo {
+        height: 40px;
+        
+    }
+    .user-name {
+        color: var(--white);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    
 }
 main {
     padding: 1rem 4rem;
@@ -146,4 +271,110 @@ main {
 }
 aside, main {
     height: 100vh;
+}
+
+/* Popovers */
+#setting-menu {
+    background: var(--midnight-purple-1);
+    border-radius: var(--border-radius);
+    border: none;
+    margin: auto;
+    width: 25vw;
+    text-align: center;
+
+    & > .brand {
+        margin-block: 0.5rem;
+    }
+    & > button {
+        padding: 0.75rem;
+        display: block;
+        width: 100%;
+        color: var(--white);
+
+        &:hover {
+            background: var(--midnight-purple-3);
+        }
+    }
+}
+#friend-list {
+    width: 50%;
+    margin: auto;
+    max-height: 50vh;
+    overflow: auto;
+
+    border: 1px solid var(--midnight-purple-3);
+    border-radius: var(--border-radius);
+    background: var(--midnight-purple-1);
+    text-align: center;
+
+    & > input {
+        width: 75%;
+        background: var(--midnight-purple-3);
+        outline: none;
+        border: none;
+        color: var(--white);
+        margin: 0.5rem auto;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+    }
+    & > .friend-card {
+        display: grid;
+        grid-template-columns: max-content auto;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+
+        & > .friend-photo {
+            height: 7.5vh;
+        }
+        & > .friend-name {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: var(--white);
+            text-align: left;
+        }
+        &:hover {
+            background: var(--midnight-purple-3);
+        }
+    }
+    &::-webkit-scrollbar-thumb {
+        background: var(--midnight-purple-3);
+        border: none;
+    }
+}
+
+/* Responsive breakpoints */
+@media screen AND (max-width: 992px) {
+    .backdrop {
+        grid-template-columns: var(--sidebar-width-sm) var(--main-width-sm);
+    }
+    .sidebar-header {
+        padding: 1rem 0.25rem;
+    }
+    .btn-new-chat {
+        width: min-content;
+    }
+    .chat-card {
+        grid-template-columns: max-content;
+        grid-template-areas: "photo";
+        justify-content: center;
+        gap: 0;
+    }
+    .chat-area .bubble {max-width: 75%;}
+    .card-info {
+        display: none;
+    }
+    .user-card {
+        grid-template-columns: max-content;
+        justify-content: center;
+    }
+    .user-name {
+        display: none;
+    }
+    main {
+        padding: 1rem;
+    }
 }
