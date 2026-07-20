@@ -1,6 +1,6 @@
 export interface AppState {
     user: User | null;
-    room: Room | null;
+    room: ActiveChatroom | null;
     recent_chats: RecentChat[];
     friends: Friend[];
 }
@@ -39,12 +39,10 @@ export interface Room {
     created_at?: Date;
 }
 
-export interface ActiveChatroom {
+export interface ActiveChatroom extends Room {
     username: string;
     fullname: string;
     photo: string;
-    room_id: string;
-    chats: Chat[];
 }
 
 export interface Friend {
