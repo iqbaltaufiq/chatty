@@ -21,7 +21,7 @@ export interface Chat {
     username: string;
     message: string;
     room_id: string;
-    created_at: Date | null;
+    created_at?: Date | null;
     updated_at?: Date | null;
     deleted_at?: Date | null;
 }
