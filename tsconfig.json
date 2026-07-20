@@ -7,7 +7,7 @@
 
         // Environment Settings
         // See also https://aka.ms/tsconfig/module
-        "module": "ES6",
+        "module": "nodenext",
         "target": "ES6",
         "types": [],
         // For nodejs:
@@ -23,6 +23,9 @@
         // Stricter Typechecking Options
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
+        // "allowImportingTsExtensions": true,
+        // "emitDeclarationOnly": true,
+        // "noEmit": true,
 
         // Style Options
         // "noImplicitReturns": true,
