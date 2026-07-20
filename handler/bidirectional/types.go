@@ -16,6 +16,7 @@ type Client struct {
 
 type Message struct {
 	entity.Chat
+	Type      string   `json:"type"`
 	Audiences []string `json:"audiences,omitempty"`
 }
 
