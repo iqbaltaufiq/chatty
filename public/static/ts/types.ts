@@ -1,7 +1,7 @@
 export interface AppState {
-    user: User;
+    user: User | null;
+    room: Room | null;
     recent_chats: RecentChat[];
-    room: Room;
     friends: Friend[];
 }
 
@@ -27,6 +27,7 @@ export interface Chat {
 }
 
 export interface Message extends Chat {
+    type: string;
     audiences: string[];
 }
 
