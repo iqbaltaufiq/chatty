@@ -36,6 +36,7 @@ func NewRouter(db *sql.DB, wsHub *bidirectional.Hub) http.Handler {
 
 	mux.Handle("/websocket", websocket.Handler(websocketHandler.Connect))
 
+	mux.Handle("/", mw.Attach(pageHandler.Index, authMw.Protected))
 	mux.Handle("GET /login", mw.Attach(pageHandler.Login, authMw.NoAuth))
 
 	mux.Handle("POST /api/register", mw.Attach(authHandler.Register, authMw.NoAuth))
