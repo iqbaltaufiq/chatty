@@ -1,4 +1,4 @@
-import { createChatBubble } from "./component.js";
+import { send as wsSend } from "./websocket.js";
 import type { AppState, Message } from "./types.ts";
 
 export function registerHandler(state: AppState): void {
@@ -23,8 +23,6 @@ function send(state: AppState) {
                 state.room?.username || "",
             ]
         }
-        const chatArea = document.querySelector(".chat-area");
-        const chatBubble: Node | null = createChatBubble(state, newChat);
-        if (chatBubble) chatArea?.append(chatBubble);
+        wsSend(newChat);
     });
 }
