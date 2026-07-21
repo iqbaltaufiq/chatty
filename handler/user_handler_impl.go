@@ -64,6 +64,19 @@ func (h *userHandler) Get(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetCurrent retrieves information about the currently logged in user.
+// It gets the username from the request context.
+func (h *userHandler) GetCurrent(w http.ResponseWriter, r *http.Request) {
+	username, _ := util.FromCtxUsername(r.Context())
+
+	user, err := h.userService.GetUser(r.Context(), username)
+	if err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	util.JSONSuccess(w, http.StatusOK, util.M{"user": user})
+}
+
 // UpdateFullname only update `fullname` field on the database
 // instead of updating the whole row.
 func (h *userHandler) UpdateFullname(w http.ResponseWriter, r *http.Request) {
