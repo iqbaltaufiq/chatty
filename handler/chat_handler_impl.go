@@ -31,6 +31,18 @@ func (h *chatHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *chatHandler) GetRecents(w http.ResponseWriter, r *http.Request) {
+	chats, err := h.chatService.GetRecents(r.Context())
+	if err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	util.JSONSuccess(w, http.StatusOK, util.M{
+		"chats":   chats,
+		"message": "found",
+	})
+}
+
 func (h *chatHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	strChatID := r.PathValue("chatID")
 
