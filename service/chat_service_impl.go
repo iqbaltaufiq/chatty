@@ -60,6 +60,16 @@ func (s *chatService) GetAll(ctx context.Context, roomID string) ([]entity.Chat,
 	return s.chatRepo.GetAll(ctx, roomID)
 }
 
+// GetRecents retrieves the most recent messages from every chatroom this user belongs to.
+// The user is taken from the authenticated user in the request context.
+func (s *chatService) GetRecents(ctx context.Context) ([]entity.Chat, error) {
+	username, ok := util.FromCtxUsername(ctx)
+	if !ok {
+		return nil, &util.ContextErrNotFound{}
+	}
+	return s.chatRepo.GetRecents(ctx, username)
+}
+
 // Delete deletes a chat specified by chatID.
 func (s *chatService) Delete(ctx context.Context, chatID int) error {
 	return s.chatRepo.Delete(ctx, chatID)
