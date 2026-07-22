@@ -97,3 +97,44 @@ func (r *chatRepository) GetAll(ctx context.Context, roomID string) ([]entity.Ch
 	}
 	return chats, nil
 }
+
+// GetRecents retrieves the most recent messages from every room this user belongs to.
+func (r *chatRepository) GetRecents(ctx context.Context, username string) ([]entity.Chat, error) {
+	query := `
+	SELECT ch.id, ch.username, ch.room_id, ch.message, ch.created_at
+	FROM chats ch
+	JOIN (
+		SELECT max(id)
+		FROM chats c
+		JOIN (
+			SELECT room_id FROM occupants
+			WHERE username = ?
+		) AS filteredID ON filteredID.room_id = c.room_id
+		GROUP BY c.room_id
+	) AS maxid ON maxid.max_id = ch.id
+	`
+	stmt, _ := r.db.PrepareContext(ctx, query)
+	defer stmt.Close()
+
+	rows, err := stmt.QueryContext(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	chats := []entity.Chat{}
+	for rows.Next() {
+		chat := entity.Chat{}
+		if err := rows.Scan(
+			&chat.ID,
+			&chat.Username,
+			&chat.RoomID,
+			&chat.Message,
+			&chat.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		chats = append(chats, chat)
+	}
+	return chats, nil
+}
