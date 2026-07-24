@@ -104,7 +104,7 @@ func (r *chatRepository) GetRecents(ctx context.Context, username string) ([]ent
 	SELECT ch.id, ch.username, ch.room_id, ch.message, ch.created_at
 	FROM chats ch
 	JOIN (
-		SELECT max(id)
+		SELECT max(id) AS max_id
 		FROM chats c
 		JOIN (
 			SELECT room_id FROM occupants
