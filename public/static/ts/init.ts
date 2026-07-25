@@ -41,7 +41,7 @@ export async function initRecentChats(state: AppState): Promise<void> {
     const chatList: HTMLDivElement | null = document.querySelector(".chat-list");
     for (const chat of state.recent_chats) {
         if (!chatList) break;
-        const chatNode = createRecentChat(chat);
+        const chatNode = createRecentChat(state, chat);
         if (chatNode) chatList.appendChild(chatNode);
     }
 }
