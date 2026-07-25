@@ -2,7 +2,7 @@ import type { AppState, Message, RecentChat } from "./types.ts";
 
 export function createRecentChat(chat: RecentChat): Node | null {
     const el: string = `
-    <div class="chat-card" data-roomID="${chat.room_id}">
+    <div class="chat-card" data-room_id="${chat.room_id}">
         <div class="image-wrapper image-circle card-image">
             <img src="/static/assets/${chat.photo}" alt="">
         </div>
