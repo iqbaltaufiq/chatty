@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"chatty/entity"
+	"chatty/model"
 	"chatty/repository"
 	"chatty/util"
 )
@@ -62,7 +63,7 @@ func (s *chatService) GetAll(ctx context.Context, roomID string) ([]entity.Chat,
 
 // GetRecents retrieves the most recent messages from every chatroom this user belongs to.
 // The user is taken from the authenticated user in the request context.
-func (s *chatService) GetRecents(ctx context.Context) ([]entity.Chat, error) {
+func (s *chatService) GetRecents(ctx context.Context) ([]model.RecentChat, error) {
 	username, ok := util.FromCtxUsername(ctx)
 	if !ok {
 		return nil, &util.ContextErrNotFound{}

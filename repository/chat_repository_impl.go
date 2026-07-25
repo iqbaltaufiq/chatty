@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"chatty/entity"
+	"chatty/model"
 	"chatty/util"
 )
 
@@ -99,36 +100,46 @@ func (r *chatRepository) GetAll(ctx context.Context, roomID string) ([]entity.Ch
 }
 
 // GetRecents retrieves the most recent messages from every room this user belongs to.
-func (r *chatRepository) GetRecents(ctx context.Context, username string) ([]entity.Chat, error) {
+func (r *chatRepository) GetRecents(ctx context.Context, username string) ([]model.RecentChat, error) {
 	query := `
-	SELECT ch.id, ch.username, ch.room_id, ch.message, ch.created_at
-	FROM chats ch
-	JOIN (
-		SELECT max(id) AS max_id
+	SELECT 
+		ch.id,
+		o_exc.username,
+		u.fullname,
+		ch.room_id,
+		u.photo,
+		ch.message,
+		ch.created_at
+	FROM (
+		SELECT max(c.id) AS max_id, c.room_id
 		FROM chats c
-		JOIN (
-			SELECT room_id FROM occupants
-			WHERE username = ?
-		) AS filteredID ON filteredID.room_id = c.room_id
+		JOIN occupants oc ON oc.room_id = c.room_id
+		WHERE oc.username = ?
 		GROUP BY c.room_id
-	) AS maxid ON maxid.max_id = ch.id
+	) AS newest
+	JOIN chats ch ON ch.id = newest.max_id
+	JOIN occupants o_exc ON o_exc.room_id = newest.room_id AND o_exc.username != ?
+	JOIN users u ON u.username = o_exc.username
+	ORDER BY ch.id DESC
 	`
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(ctx, username)
+	rows, err := stmt.QueryContext(ctx, username, username)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	chats := []entity.Chat{}
+	chats := []model.RecentChat{}
 	for rows.Next() {
-		chat := entity.Chat{}
+		chat := model.RecentChat{}
 		if err := rows.Scan(
 			&chat.ID,
 			&chat.Username,
+			&chat.Fullname,
 			&chat.RoomID,
+			&chat.Photo,
 			&chat.Message,
 			&chat.CreatedAt,
 		); err != nil {
