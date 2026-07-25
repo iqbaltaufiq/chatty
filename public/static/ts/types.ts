@@ -55,6 +55,7 @@ export interface Friend {
 }
 
 export interface RecentChat {
+    id: number;
     username: string;
     fullname: string;
     photo: string;
