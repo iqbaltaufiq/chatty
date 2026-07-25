@@ -25,14 +25,18 @@ export function createRecentChat(chat: RecentChat): Node | null {
 }
 
 export function createChatBubble(state: AppState, chat: Message): Node | null {
+    let time: Date;
+    let timeFormat: string = "";
+    if (chat.created_at) {
+        time = new Date(chat.created_at);
+        timeFormat = `${time?.getHours()}:${time?.getMinutes()}`;
+    }
     const direction =
         chat.username === state.user?.username ? "outbound" : "inbound";
-    const time =
-        `${chat.created_at?.getHours()}:${chat.created_at?.getMinutes()}`;
     const el = `
     <div class="bubble ${direction}">
         <p class="message"></p>
-        <p class="time">${time}</p>
+        <p class="time">${timeFormat}</p>
     </div>
     `;
     const parser: DOMParser = new DOMParser();
