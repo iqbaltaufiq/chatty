@@ -1,10 +1,12 @@
 import type { AppState } from "./types.js";
-import { getUser } from "./api.js";
+import { getRecentChats, getUser } from "./api.js";
 import { registerHandler } from "./handler.js";
 import { toggleConnection } from "./websocket.js";
+import { createRecentChat } from "./component.js";
 
 export async function initApp(state: AppState): Promise<void> {
     await initUser(state);
+    await initRecentChats(state)
     registerHandler(state);
     toggleConnection(state);
 }
@@ -27,3 +29,19 @@ export async function initUser(state: AppState): Promise<void> {
     if (userName) userName.textContent = state.user?.fullname || "unknown";
 }
 
+export async function initRecentChats(state: AppState): Promise<void> {
+    try {
+        const chats = await getRecentChats();
+        if (!chats) return;
+        state.recent_chats = chats;
+    } catch (error) {
+        console.error(error);
+    }
+
+    const chatList: HTMLDivElement | null = document.querySelector(".chat-list");
+    for (const chat of state.recent_chats) {
+        if (!chatList) break;
+        const chatNode = createRecentChat(chat);
+        if (chatNode) chatList.appendChild(chatNode);
+    }
+}
