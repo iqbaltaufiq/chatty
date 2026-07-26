@@ -128,4 +128,5 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
         const newBubble = createChatBubble(state, message)
         if (newBubble) chatArea?.appendChild(newBubble);
     }
+    if (chatArea) chatArea.scrollTop = chatArea.scrollHeight;
 }

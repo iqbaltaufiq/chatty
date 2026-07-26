@@ -31,8 +31,13 @@ function receiveMessage(state: AppState, message: MessageEvent): void {
 
     if (isChat && isTheChatOpened) {
         const newBubble = createChatBubble(state, chat);
-        if (newBubble)
-            document.querySelector(".chat-area")?.append(newBubble);
+        if (newBubble) {
+            const chatArea = document.querySelector(".chat-area");
+            if (chatArea) {
+                chatArea.append(newBubble);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
     }
 }
 
