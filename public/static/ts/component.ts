@@ -1,5 +1,6 @@
 import { getChats } from "./api.js";
 import type { AppState, Chat, Friend, Message, RecentChat } from "./types.ts";
+import { padTime } from "./utility.js";
 
 export function createRecentChat(state: AppState, chat: RecentChat): Node | null {
     const el: string = `
@@ -36,7 +37,8 @@ export function createChatBubble(state: AppState, chat: Message): Node | null {
     let timeFormat: string = "";
     if (chat.created_at) {
         time = new Date(chat.created_at);
-        timeFormat = `${time?.getHours()}:${time?.getMinutes()}`;
+        if (time) timeFormat =
+                `${padTime(time.getHours())}:${padTime(time.getMinutes())}`;
     }
     const direction =
         chat.username === state.user?.username ? "outbound" : "inbound";
@@ -118,6 +120,7 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
             room_id: chat.room_id,
             message: chat.message,
             type: "chat",
+            created_at: chat.created_at || null, 
             audiences: [
                 state.user?.username || "",
                 state.room?.username || "",
