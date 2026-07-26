@@ -108,22 +108,25 @@ func (r *relationshipRepository) Exists(ctx context.Context, initiator, target s
 // GetFriends retrieves a list of users that have relationship with the specified user.
 func (r *relationshipRepository) GetFriends(ctx context.Context, username string) ([]model.Friend, error) {
 	query := `
-	SELECT source.id, u.uuid, u.username, u.fullname, u.photo
+	SELECT source.id, o.room_id, u.uuid, source.username, u.fullname, u.photo
 	FROM (
-		SELECT r.id, r.initiator as 'friend'
-		FROM relationships r
-		WHERE r.target = ?
-		UNION
-		SELECT r.id, r.target as 'friend'
+		SELECT r.id, r.target AS username
 		FROM relationships r
 		WHERE r.initiator = ?
+		UNION
+		SELECT r.id, r.initiator AS username
+		FROM relationships r
+		WHERE r.target = ?
 	) AS source
-	JOIN users AS u ON u.username = source.friend
+	JOIN users u ON u.username = source.username
+	LEFT JOIN occupants o ON o.username = source.username AND o.room_id IN (SELECT room_id FROM occupants WHERE username = ?)
+	ORDER BY u.fullname ASC
 	`
 	stmt, _ := r.db.PrepareContext(ctx, query)
 	defer stmt.Close()
 
-	rows, err := stmt.QueryContext(ctx, username, username)
+	args := [3]any{username, username, username}
+	rows, err := stmt.QueryContext(ctx, args[:]...)
 	if err != nil {
 		return nil, err
 	}
@@ -131,17 +134,24 @@ func (r *relationshipRepository) GetFriends(ctx context.Context, username string
 
 	var friends []model.Friend
 	for rows.Next() {
-		var friend model.Friend
-		var binaryUUID []byte
-
+		var (
+			friend         model.Friend
+			binaryUUID     []byte
+			nullableRoomID sql.NullString
+		)
 		if err := rows.Scan(
 			&friend.RelationshipID,
+			&nullableRoomID,
 			&binaryUUID,
 			&friend.Username,
 			&friend.Fullname,
 			&friend.Photo,
 		); err != nil {
 			return nil, err
+		}
+		friend.RoomID = ""
+		if nullableRoomID.Valid {
+			friend.RoomID = nullableRoomID.String
 		}
 		friend.UUID, _ = util.UUIDtoString(binaryUUID)
 		friends = append(friends, friend)
