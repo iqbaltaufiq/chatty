@@ -19,6 +19,7 @@ export async function initUser(state: AppState): Promise<void> {
         state.user = user;
     } catch (error) {
         console.error(error);
+        return
     }
 
     const photoExists = `/static/assets/${state.user?.photo}`;
@@ -37,6 +38,7 @@ export async function initRecentChats(state: AppState): Promise<void> {
         state.recent_chats = chats;
     } catch (error) {
         console.error(error);
+        return
     }
 
     const chatList: HTMLDivElement | null = document.querySelector(".chat-list");
