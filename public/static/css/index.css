@@ -201,6 +201,9 @@ main {
         background: var(--midnight-purple-1);
         border-radius: var(--border-radius);
         font-size: 0.9rem;
+
+        white-space: pre-line;
+        word-wrap: break-word;
     }
     .time {
         position: absolute;
