@@ -1,12 +1,13 @@
-import type { AppState } from "./types.js";
-import { getRecentChats, getUser } from "./api.js";
+import type { AppState, Friend } from "./types.js";
+import { getFriends, getRecentChats, getUser } from "./api.js";
 import { registerHandler } from "./handler.js";
 import { toggleConnection } from "./websocket.js";
-import { createRecentChat } from "./component.js";
+import { createFriend, createRecentChat } from "./component.js";
 
 export async function initApp(state: AppState): Promise<void> {
     await initUser(state);
-    await initRecentChats(state)
+    await initRecentChats(state);
+    await initFriendList(state);
     registerHandler(state);
     toggleConnection(state);
 }
@@ -43,5 +44,21 @@ export async function initRecentChats(state: AppState): Promise<void> {
         if (!chatList) break;
         const chatNode = createRecentChat(state, chat);
         if (chatNode) chatList.appendChild(chatNode);
+    }
+}
+
+async function initFriendList(state: AppState): Promise<void> {
+    try {
+        const friends = await getFriends();
+        state.friends = friends ? friends : [];
+    } catch (error) {
+        console.error(error)
+        return
+    }
+    
+    const friendList = document.getElementById("friend-list");
+    for (const friend of state.friends) {
+        const newFriend = createFriend(state, friend);
+        if (newFriend) friendList?.appendChild(newFriend);
     }
 }
