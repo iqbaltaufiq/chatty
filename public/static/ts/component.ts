@@ -56,6 +56,32 @@ export function createChatBubble(state: AppState, chat: Message): Node | null {
     return parsedEl.body.firstChild;
 }
 
+export function createFriend(state: AppState, friend: Friend): Node | null {
+    const el = `
+        <div class="friend-card" data-id="${friend.relationship_id}">
+            <div class="image-wrapper image-circle friend-photo">
+                <img src="/static/assets/${friend.photo}" alt="">
+            </div>
+            <p class="friend-name"></p>
+        </div>
+    `;
+    const parser: DOMParser = new DOMParser();
+    const doc: Document = parser.parseFromString(el, "text/html");
+
+    const friendCard = doc.body.querySelector(".friend-card");
+    if (friendCard) {
+        friendCard.addEventListener("click", () => {
+            setActiveChatroom(state, friend);
+            document.getElementById("friend-list")?.togglePopover();
+        });
+    }
+    const friendName: HTMLParagraphElement | null =
+        doc.body.querySelector(".friend-name");
+    if (friendName) friendName.textContent = friend.fullname;
+
+    return doc.body.firstChild;
+}
+
 async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Promise<void> {
     // avoid sending request for chatroom that is already open.
     if (state.room?.id === chat.room_id) return;
