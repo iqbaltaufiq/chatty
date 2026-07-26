@@ -1,5 +1,5 @@
 import { getChats } from "./api.js";
-import type { AppState, Chat, Message, RecentChat } from "./types.ts";
+import type { AppState, Chat, Friend, Message, RecentChat } from "./types.ts";
 
 export function createRecentChat(state: AppState, chat: RecentChat): Node | null {
     const el: string = `
@@ -56,9 +56,10 @@ export function createChatBubble(state: AppState, chat: Message): Node | null {
     return parsedEl.body.firstChild;
 }
 
-async function setActiveChatroom(state: AppState, chat: RecentChat): Promise<void> {
+async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Promise<void> {
     // avoid sending request for chatroom that is already open.
     if (state.room?.id === chat.room_id) return;
+    if (!chat.room_id) return;
 
     let chats: Chat[] = [];
     const resp = await getChats(chat.room_id);
