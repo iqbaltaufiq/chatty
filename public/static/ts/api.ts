@@ -1,4 +1,4 @@
-import type { Chat, RecentChat, User } from "./types.ts";
+import type { Chat, Friend, RecentChat, User } from "./types.ts";
 
 export async function getUser(): Promise<User | null> {
     const response = await fetch("/api/user/get");
@@ -40,5 +40,18 @@ export async function getChats(room_id: string): Promise<Chat[] | null> {
     } catch (error) {
         console.error(error);
         return null;
+    }
+}
+
+export async function getFriends(): Promise<Friend[] | null> {
+    try {
+        const response = await fetch("/api/relationship/all");
+        const json = await response.json();
+        if (!response.ok) throw new Error("Error: "+json.data?.message);
+        const friends: Friend[] = json.data?.friends;
+        return friends
+    } catch (error) {
+        console.error(error);
+        return null
     }
 }
