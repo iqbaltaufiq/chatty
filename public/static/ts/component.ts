@@ -42,12 +42,11 @@ export function createChatBubble(state: AppState, chat: Message): Node | null {
     }
     const direction =
         chat.username === state.user?.username ? "outbound" : "inbound";
-    const el = `
-    <div class="bubble ${direction}">
-        <p class="message"></p>
-        <p class="time">${timeFormat}</p>
-    </div>
-    `;
+    const el =
+    `<div class="bubble ${direction}">` +
+        `<p class="message"></p>` +
+        `<p class="time">${timeFormat}</p>` +
+    `</div>`;
     const parser: DOMParser = new DOMParser();
     const parsedEl: Document = parser.parseFromString(el, "text/html");
 

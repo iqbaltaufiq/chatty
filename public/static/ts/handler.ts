@@ -9,8 +9,7 @@ function send(state: AppState) {
     const form: HTMLElement | null = document.getElementById("chat-form");
     form?.addEventListener("submit", event => {
         event.preventDefault();
-        const message = document.querySelector("textarea")?.value;
-
+        const message = document.querySelector("textarea")?.value.trim();
         const newChat: Message = {
             id: null,
             username: state.user?.username || "",
