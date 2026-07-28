@@ -13,14 +13,32 @@ function handleSubmit(): void {
 
         const formInputs = document.getElementsByTagName("input");
         const username =
-            formInputs[0]?.name === "username" ? formInputs[0].value : "";
+            formInputs[0]?.name === "username" ?
+            formInputs[0].value :
+            "";
         const password =
-            formInputs[1]?.name === "password" ? formInputs[1].value : "";
+            formInputs[1]?.name === "password" ?
+            formInputs[1].value :
+            "";
+
+        let isSuccess = false;
         try {
-             await login(username, password);
+            isSuccess = await login(username, password);
+            if (isSuccess) {
+                window.location.href = "/";
+                return
+            }
         } catch (error) {
             console.error(error);
-            return
         }
+        if (!isSuccess) {
+            document.querySelector(".error")?.remove();
+            const err = document.createElement("p");
+            err.className = "error";
+            err.textContent =
+                "Please check your username and password again.";
+            form.prepend(err);
+        }
+        form.reset();
     });
 }
