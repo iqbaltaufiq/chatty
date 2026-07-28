@@ -71,3 +71,15 @@ export async function login(username: string, password: string): Promise<boolean
     }
     return isSuccess
 }
+
+export async function logout(): Promise<boolean> {
+    let isSuccess = false;
+    try {
+        const response = await fetch("/api/logout", { method: "POST" });
+        isSuccess = response.ok;
+    } catch (error) {
+        console.error(error);
+        isSuccess = false;
+    }
+    return isSuccess
+}
