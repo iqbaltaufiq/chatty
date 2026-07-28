@@ -1,8 +1,10 @@
 import { send as wsSend } from "./websocket.js";
 import type { AppState, Message } from "./types.ts";
+import { logout } from "./api.js";
 
 export function registerHandler(state: AppState): void {
     send(state);
+    handleLogout(state);
 }
 
 function send(state: AppState) {
@@ -23,5 +25,27 @@ function send(state: AppState) {
             ]
         }
         wsSend(newChat);
+    });
+}
+
+function handleLogout(state: AppState): void {
+    const logoutBtn = document.getElementById("logout-btn");
+    logoutBtn?.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+
+        let isSuccess = false;
+        try {
+            isSuccess = await logout();
+        } catch (error) {
+            console.error(error);
+            return
+        }
+        if (isSuccess) {
+            state.user = null;
+            state.room = null;
+            state.friends = [];
+            state.recent_chats = [];
+            window.location.href = "/login";
+        }
     });
 }
