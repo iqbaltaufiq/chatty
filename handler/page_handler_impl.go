@@ -23,5 +23,5 @@ func (h *pageHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *pageHandler) Register(w http.ResponseWriter, r *http.Request) {
-	// wip
+	http.ServeFile(w, r, "public/register.html")
 }
