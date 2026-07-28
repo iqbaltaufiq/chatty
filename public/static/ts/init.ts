@@ -1,4 +1,4 @@
-import type { AppState, Friend } from "./types.js";
+import type { AppState } from "./types.js";
 import { getFriends, getRecentChats, getUser } from "./api.js";
 import { registerHandler } from "./handler.js";
 import { toggleConnection } from "./websocket.js";
