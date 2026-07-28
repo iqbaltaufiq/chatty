@@ -56,21 +56,18 @@ export async function getFriends(): Promise<Friend[] | null> {
     }
 }
 
-export async function login(username: string, password: string): Promise<void> {
+export async function login(username: string, password: string): Promise<boolean> {
+    let isSuccess: boolean;
     try {
         const response = await fetch("/api/login", {
             method: "POST",
             headers: [["Content-Type", "application/json"]],
             body: JSON.stringify({username, password}),
         });
-        if (response.ok) {
-            window.location.href = "/";
-            return
-        }
-        const json = await response.json();
-        throw new Error("Login failed: "+json.data?.message);
+        isSuccess = response.ok;
     } catch (error) {
-        console.error(error);
-        return
+        console.error("Login failed: "+error);
+        isSuccess = false;
     }
+    return isSuccess
 }
