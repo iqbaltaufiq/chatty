@@ -54,3 +54,8 @@ form {
         }
     }
 }
+.error {
+    text-align: center;
+    color: var(--white);
+    font-size: small;
+}
