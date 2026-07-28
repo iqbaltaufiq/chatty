@@ -15,7 +15,7 @@ func NewPageHandler(userService service.UserService) PageHandler {
 }
 
 func (h *pageHandler) Index(w http.ResponseWriter, r *http.Request) {
-	// wip
+	http.ServeFile(w, r, "public/")
 }
 
 func (h *pageHandler) Login(w http.ResponseWriter, r *http.Request) {
