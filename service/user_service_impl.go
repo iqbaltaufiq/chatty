@@ -2,12 +2,7 @@ package service
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
-	"errors"
-	"strconv"
 	"strings"
-	"time"
 
 	"chatty/entity"
 	"chatty/repository"
@@ -50,32 +45,9 @@ func (s *userService) UpdateFullname(ctx context.Context, username, fullname str
 //
 // valid: `default.png`, `16228591.jpg`
 func (s *userService) UpdatePhoto(ctx context.Context, username, photo string) error {
-	allowedExt := imageExtensions
-	photo = strings.TrimSpace(photo)
-	splitFilename := strings.Split(photo, ".")
-	length := len(splitFilename)
-
-	// if there are more than one period (.) in the filename,
-	// throw an error.
-	if length != 2 {
-		return errors.New("invalid filename")
+	hashedFilename, err := util.HashFilename(photo)
+	if err != nil {
+		return err
 	}
-
-	nameWithoutExt := splitFilename[0]
-	fileExt := splitFilename[1]
-
-	if !allowedExt.Exists(fileExt) {
-		return errors.New("extension not allowed")
-	}
-
-	// randomize the filename to avoid name collision
-	// by hashing them with SHA256.
-	// the composite: filename without extensions + username + nanoseconds
-	nanoseconds := strconv.Itoa(time.Now().UTC().Nanosecond())
-	stringToHash := nameWithoutExt + username + nanoseconds
-	hashBytes := sha256.Sum256([]byte(stringToHash))
-	hashString := hex.EncodeToString(hashBytes[:])
-	finalFilename := hashString + "." + fileExt
-
-	return s.userRepo.UpdatePhoto(ctx, username, finalFilename)
+	return s.userRepo.UpdatePhoto(ctx, username, hashedFilename)
 }
