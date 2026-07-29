@@ -61,12 +61,33 @@ func (h *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 // Register handles account creation for new user.
 func (h *authHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var user entity.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	const (
+		maxFileSize int64 = 2 * 1000 * 1000 // 2MB
+		maxMemory   int64 = 1 << 10         // 1KB
+	)
+	if err := r.ParseMultipartForm(maxMemory); err != nil {
 		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
-	if err := h.authService.CreateUser(r.Context(), user); err != nil {
+	file, header, err := r.FormFile("photo")
+	if err != nil {
+		util.JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	defer file.Close()
+
+	if header.Size > maxFileSize {
+		util.JSONError(w, http.StatusBadRequest, &RequestErrSizeLimitExceeded{})
+		return
+	}
+	user := entity.User{
+		Username: r.FormValue("username"),
+		Fullname: r.FormValue("fullname"),
+		Email:    r.FormValue("email"),
+		Password: r.FormValue("password"),
+		Photo:    header.Filename,
+	}
+	if err := h.authService.CreateUser(r.Context(), user, file); err != nil {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
