@@ -17,7 +17,7 @@ func (s *services) User() service.UserService {
 }
 
 func (s *services) Auth() service.AuthService {
-	return service.NewAuthService(s.repo.User())
+	return service.NewAuthService(s.repo.User(), s.repo.File())
 }
 
 func (s *services) Room() service.RoomService {
@@ -34,4 +34,8 @@ func (s *services) Relationship() service.RelationshipService {
 
 func (s *services) Chat() service.ChatService {
 	return service.NewChatService(s.repo.Chat(), s.repo.Occupant())
+}
+
+func (s *services) File() service.FileService {
+	return service.NewFileService(s.repo.File())
 }

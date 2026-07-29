@@ -35,3 +35,7 @@ func (r *repositories) Occupant() repository.OccupantRepository {
 func (r *repositories) Chat() repository.ChatRepository {
 	return repository.NewChatRepository(r.db)
 }
+
+func (r *repositories) File() repository.FileRepository {
+	return repository.NewFileRepository()
+}
