@@ -29,6 +29,8 @@
     /* --white: #fafafa; */
     --white: gainsboro;
     --black: #333;
+
+    --border-radius: 0.5rem;
 }
 
 * {
