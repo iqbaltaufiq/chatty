@@ -17,3 +17,9 @@ type RequestErrInsufficientBody struct{}
 func (e *RequestErrInsufficientBody) Error() string {
 	return "request body does not meet the required expectation"
 }
+
+type RequestErrSizeLimitExceeded struct{}
+
+func (e *RequestErrSizeLimitExceeded) Error() string {
+	return "payload exceeded the maximum size allowed"
+}
