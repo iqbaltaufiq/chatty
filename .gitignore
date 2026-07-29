@@ -23,6 +23,7 @@ build/
 out/
 .next/
 .nuxt/
+public/static/assets/*
 
 # to-do list
 TODO.md
