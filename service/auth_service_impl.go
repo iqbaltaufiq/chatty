@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"io"
 
 	"chatty/entity"
 	"chatty/model"
@@ -11,16 +12,34 @@ import (
 
 type authService struct {
 	userRepo repository.UserRepository
+	fileRepo repository.FileRepository
 }
 
-func NewAuthService(userRepo repository.UserRepository) AuthService {
+func NewAuthService(
+	userRepo repository.UserRepository,
+	fileRepo repository.FileRepository,
+) AuthService {
 	return &authService{
 		userRepo,
+		fileRepo,
 	}
 }
 
 // CreateUser generates UUID, hashes the password, and stores the user into database.
-func (s *authService) CreateUser(ctx context.Context, user entity.User) error {
+func (s *authService) CreateUser(ctx context.Context, user entity.User, file io.Reader) error {
+	hashedFilename, err := util.HashFilename(user.Photo)
+	if err != nil {
+		return err
+	}
+	user.Photo = hashedFilename
+
+	if err := s.fileRepo.Store(
+		ctx,
+		file,
+		hashedFilename,
+	); err != nil {
+		return err
+	}
 	// hash user's password using bcrypt
 	hashPwd, err := util.HashPassword(user.Password)
 	if err != nil {
