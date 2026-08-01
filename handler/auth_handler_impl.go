@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -71,21 +72,28 @@ func (h *authHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 	file, header, err := r.FormFile("photo")
 	if err != nil {
-		util.JSONError(w, http.StatusBadRequest, err)
-		return
+		// A missing photo should not throw an error.
+		// Only throw an error that is not a missing file.
+		if !errors.Is(err, http.ErrMissingFile) {
+			util.JSONError(w, http.StatusBadRequest, err)
+			return
+		}
 	}
-	defer file.Close()
-
-	if header.Size > maxFileSize {
-		util.JSONError(w, http.StatusBadRequest, &RequestErrSizeLimitExceeded{})
-		return
+	userPhoto := "default.png"
+	if file != nil {
+		if header.Size > maxFileSize {
+			util.JSONError(w, http.StatusBadRequest, &RequestErrSizeLimitExceeded{})
+			return
+		}
+		userPhoto = header.Filename
+		defer file.Close()
 	}
 	user := entity.User{
 		Username: r.FormValue("username"),
 		Fullname: r.FormValue("fullname"),
 		Email:    r.FormValue("email"),
 		Password: r.FormValue("password"),
-		Photo:    header.Filename,
+		Photo:    userPhoto,
 	}
 	if err := h.authService.CreateUser(r.Context(), user, file); err != nil {
 		util.JSONError(w, http.StatusInternalServerError, err)

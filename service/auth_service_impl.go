@@ -6,6 +6,7 @@ import (
 
 	"chatty/entity"
 	"chatty/model"
+	customerrors "chatty/model/custom_errors"
 	"chatty/repository"
 	"chatty/util"
 )
@@ -27,12 +28,26 @@ func NewAuthService(
 
 // CreateUser generates UUID, hashes the password, and stores the user into database.
 func (s *authService) CreateUser(ctx context.Context, user entity.User, file io.Reader) error {
-	hashedFilename, err := util.HashFilename(user.Photo)
-	if err != nil {
-		return err
+	var (
+		usernameExists = user.Username != ""
+		fullnameExists = user.Fullname != ""
+		emailExists    = user.Email != ""
+		passwordExists = user.Password != ""
+		fileExists     = file != nil
+	)
+	if !usernameExists ||
+		!fullnameExists ||
+		!emailExists ||
+		!passwordExists {
+		return &customerrors.ErrInsufficientPayload{}
 	}
-	user.Photo = hashedFilename
-
+	if fileExists {
+		hashedFilename, err := util.HashFilename(user.Photo)
+		if err != nil {
+			return err
+		}
+		user.Photo = hashedFilename
+	}
 	// hash user's password using bcrypt
 	hashPwd, err := util.HashPassword(user.Password)
 	if err != nil {
@@ -44,11 +59,16 @@ func (s *authService) CreateUser(ctx context.Context, user entity.User, file io.
 	if err := s.userRepo.CreateUser(ctx, user); err != nil {
 		return err
 	}
-	return s.fileRepo.Store(
-		ctx,
-		file,
-		hashedFilename,
-	)
+	if fileExists {
+		if err := s.fileRepo.Store(
+			ctx,
+			file,
+			user.Photo,
+		); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // ValidateCreds checks if password from request matches the password stored in database.
