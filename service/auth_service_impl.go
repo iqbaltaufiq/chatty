@@ -42,7 +42,7 @@ func (s *authService) CreateUser(ctx context.Context, user entity.User, file io.
 	user.UUID = util.GenerateUUID()
 
 	if err := s.userRepo.CreateUser(ctx, user); err != nil {
-		return nil
+		return err
 	}
 	return s.fileRepo.Store(
 		ctx,
