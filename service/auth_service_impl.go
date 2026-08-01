@@ -33,13 +33,6 @@ func (s *authService) CreateUser(ctx context.Context, user entity.User, file io.
 	}
 	user.Photo = hashedFilename
 
-	if err := s.fileRepo.Store(
-		ctx,
-		file,
-		hashedFilename,
-	); err != nil {
-		return err
-	}
 	// hash user's password using bcrypt
 	hashPwd, err := util.HashPassword(user.Password)
 	if err != nil {
@@ -48,7 +41,14 @@ func (s *authService) CreateUser(ctx context.Context, user entity.User, file io.
 	user.Password = hashPwd
 	user.UUID = util.GenerateUUID()
 
-	return s.userRepo.CreateUser(ctx, user)
+	if err := s.userRepo.CreateUser(ctx, user); err != nil {
+		return nil
+	}
+	return s.fileRepo.Store(
+		ctx,
+		file,
+		hashedFilename,
+	)
 }
 
 // ValidateCreds checks if password from request matches the password stored in database.
