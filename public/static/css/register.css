@@ -1,0 +1,96 @@
+:root {
+    --main-width: 25vw;
+}
+p, input, button {
+    color: var(--white);
+}
+.backdrop {
+    width: 100vw;
+    height: 100vh;
+    background: var(--midnight-purple-5);
+}
+main {
+    width: clamp(14rem, var(--main-width), 28rem);
+    margin: auto;
+
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.header {
+    text-align: center;
+    /* border: 1px dashed orange; */
+    width: 100%;
+    font-size: x-large;
+    padding: 1rem;
+}
+.register-box {
+    width: 100%;
+    /* border: 1px dashed limegreen; */
+    border-radius: var(--border-radius);
+}
+form {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--midnight-purple-1);
+    border-radius: var(--border-radius);
+    & > * {
+        display: block;
+        width: 100%;
+        margin-block: 0.5rem;
+    }
+}
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    background: none;
+    border: 1px solid var(--midnight-purple-1);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+}
+input[type="file"] {
+    /* border: 1px dashed orange; */
+    color: slategrey;
+    &::file-selector-button {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.5rem;
+        padding: 1rem;
+
+        cursor: pointer;
+
+        background: none;
+        color: slategray;
+        border: 1px solid var(--midnight-purple-1);
+        border-radius: var(--border-radius);
+    }
+}
+::placeholder {
+    color: slategray;
+}
+.submit-btn {
+    background: var(--midnight-purple-1);
+    border: 1px solid var(--midnight-purple-1);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    &:hover {
+        background: var(--midnight-purple-2);
+    }
+}
+.redirect {
+    display: block;
+    text-align: center;
+    font-size: x-small;
+    margin: 0.5rem auto;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+.error {
+    display: none;
+    text-align: center;
+    padding: 1rem;
+    padding-top: 0;
+    font-size: smaller;
+    color: var(--text-error);
+}

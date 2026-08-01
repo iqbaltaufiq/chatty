@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Create an account - Chatty</title>
+        <link rel="stylesheet" href="/static/css/common.css">
+        <link rel="stylesheet" href="/static/css/register.css">
+    </head>
+    <body>
+        <div class="backdrop">
+            <main>
+                <p class="header">Chatty</p>
+                <div class="register-box">
+                    <form action="/api/register" method="post" enctype="multipart/form-data">
+                        <p class="error"></p>
+                        <input
+                            type="text"
+                            name="fullname"
+                            placeholder="Full Name"
+                            autofocus
+                            required
+                        >
+                        <input 
+                            type="text"
+                            name="username"
+                            placeholder="Username"
+                            autocomplete="username"
+                            required
+                        >
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Email"
+                            autocomplete="email"
+                            required
+                        >
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <input
+                            type="password"
+                            name="password-again"
+                            placeholder="Re-Type Your Password"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <input
+                            type="file"
+                            id="upload"
+                            name="photo"
+                            accept="image/jpeg, image/png, image/webp, image/tiff"
+                        >
+                        <button type="submit" class="btn btn-block btn-borderless submit-btn">Create account</button>
+                    </form>
+                    <a href="/login" class="redirect">Already have an account? Sign in.</a>
+                </div>
+            </main>
+        </div>
+        <script type="module" src="/static/dist/pages/register.js"></script>
+    </body>
+</html>
