@@ -83,3 +83,18 @@ export async function logout(): Promise<boolean> {
     }
     return isSuccess
 }
+
+export async function register(data: FormData): Promise<boolean> {
+    let isSuccess = false;
+    try {
+        const response = await fetch("/api/register", {
+            method: "POST",
+            body: data
+        });
+        isSuccess = response.ok;
+    } catch (error) {
+        console.error(error);
+        isSuccess = false;
+    }
+    return isSuccess
+}
