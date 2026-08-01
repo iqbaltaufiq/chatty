@@ -1,3 +1,5 @@
+export const MAX_FILE_SIZE = 2 * 1000 * 1000; // 2MB
+
 export interface AppState {
     user: User | null;
     room: ActiveChatroom | null;
