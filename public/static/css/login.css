@@ -60,3 +60,12 @@ form {
     font-size: small;
     margin-bottom: 1rem;
 }
+.redirect {
+    display: block;
+    text-align: center;
+    font-size: x-small;
+    margin-block: 1rem;
+    &:hover {
+        text-decoration: underline;
+    }
+}
