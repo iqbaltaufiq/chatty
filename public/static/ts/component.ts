@@ -102,13 +102,19 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
         chats: chats
     }
     const photo: HTMLImageElement | null =
-        document.querySelector(".chat-header-photo > img");
+        document.querySelector(".chat-header > img");
     if (photo) photo.src = `/static/assets/${chat.photo}`;
 
-    const fullname: HTMLParagraphElement | null =
-        document.querySelector(".chat-header-name");
-    if (fullname) fullname.textContent = chat.fullname.trim();
+    const imageWrapper: HTMLElement | null =
+        document.querySelector(".chat-header-photo");
+    if (imageWrapper) imageWrapper.style.display = "block";
 
+    const fullname: HTMLElement | null =
+        document.querySelector(".chat-header-name");
+    if (fullname) {
+        fullname.textContent = chat.fullname.trim();
+        fullname.style.display = "block";
+    }
     const chatArea = document.querySelector(".chat-area");
     if (chatArea) chatArea.innerHTML = "";
 
@@ -129,4 +135,12 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
         if (newBubble) chatArea?.appendChild(newBubble);
     }
     if (chatArea) chatArea.scrollTop = chatArea.scrollHeight;
+
+    const chatInput: HTMLTextAreaElement | null =
+        document.querySelector(".chat-input textarea");
+    if (chatInput) chatInput.disabled = false;
+
+    const submitBtn: HTMLButtonElement | null =
+        document.querySelector(".chat-input button");
+    if (submitBtn) submitBtn.disabled = false;
 }
