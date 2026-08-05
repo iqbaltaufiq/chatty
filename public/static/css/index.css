@@ -165,6 +165,10 @@ main {
     grid-template-columns: max-content auto;
     align-items: center;
     gap: 1rem;
+
+    & > * {
+        display: none;
+    }
     
     .chat-header-photo {
         /* border: 1px dashed yellow; */
