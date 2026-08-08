@@ -22,15 +22,12 @@ func (r *relationshipRepository) Add(ctx context.Context, tx *sql.Tx, initiator,
 	INSERT INTO relationships (initiator, target)
 	VALUES (?,?)
 	`
-	stmt := new(sql.Stmt)
+	var err error
 	if tx != nil {
-		stmt, _ = tx.PrepareContext(ctx, query)
+		_, err = tx.ExecContext(ctx, query, initiator, target)
 	} else {
-		stmt, _ = r.db.PrepareContext(ctx, query)
+		_, err = r.db.ExecContext(ctx, query, initiator, target)
 	}
-	defer stmt.Close()
-
-	_, err := stmt.ExecContext(ctx, initiator, target)
 	return err
 }
 
@@ -40,19 +37,14 @@ func (r *relationshipRepository) Remove(ctx context.Context, tx *sql.Tx, self, t
 	WHERE initiator = ? AND target = ? OR initiator = ? AND target = ?
 	LIMIT 1
 	`
-	stmt := new(sql.Stmt)
+	var err error
+	args := [4]any{self, target, target, self}
 	if tx != nil {
-		stmt, _ = tx.PrepareContext(ctx, query)
+		_, err = tx.ExecContext(ctx, query, args[:]...)
 	} else {
-		stmt, _ = r.db.PrepareContext(ctx, query)
+		_, err = r.db.ExecContext(ctx, query, args[:]...)
 	}
-	defer stmt.Close()
 
-	_, err := stmt.ExecContext(
-		ctx,
-		self, target,
-		target, self,
-	)
 	return err
 }
 
@@ -95,17 +87,13 @@ func (r *relationshipRepository) Exists(ctx context.Context, tx *sql.Tx, initiat
 	WHERE (initiator = ? AND target = ?) OR (initiator = ? AND target = ?)
 	LIMIT 1
 	`
-	stmt := new(sql.Stmt)
-	if tx != nil {
-		stmt, _ = tx.PrepareContext(ctx, query)
-	} else {
-		stmt, _ = r.db.PrepareContext(ctx, query)
-	}
-	defer stmt.Close()
-
+	row := new(sql.Row)
 	args := []any{initiator, target, target, initiator}
-	row := stmt.QueryRowContext(ctx, args...)
-
+	if tx != nil {
+		row = tx.QueryRowContext(ctx, query, args...)
+	} else {
+		row = r.db.QueryRowContext(ctx, query, args...)
+	}
 	exists := false
 	rowsCount := 0
 	if err := row.Scan(&rowsCount); err != nil {
@@ -134,16 +122,15 @@ func (r *relationshipRepository) GetFriends(ctx context.Context, tx *sql.Tx, use
 	LEFT JOIN occupants o ON o.username = source.username AND o.room_id IN (SELECT room_id FROM occupants WHERE username = ?)
 	ORDER BY u.fullname ASC
 	`
-	stmt := new(sql.Stmt)
-	if tx != nil {
-		stmt, _ = tx.PrepareContext(ctx, query)
-	} else {
-		stmt, _ = r.db.PrepareContext(ctx, query)
-	}
-	defer stmt.Close()
-
+	var err error
+	rows := new(sql.Rows)
 	args := [3]any{username, username, username}
-	rows, err := stmt.QueryContext(ctx, args[:]...)
+
+	if tx != nil {
+		rows, err = tx.QueryContext(ctx, query, args[:]...)
+	} else {
+		rows, err = r.db.QueryContext(ctx, query, args[:]...)
+	}
 	if err != nil {
 		return nil, err
 	}
