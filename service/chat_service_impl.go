@@ -13,15 +13,18 @@ import (
 )
 
 type chatService struct {
+	db           *sql.DB
 	chatRepo     repository.ChatRepository
 	occupantRepo repository.OccupantRepository
 }
 
 func NewChatService(
+	db *sql.DB,
 	chatRepo repository.ChatRepository,
 	occupantRepo repository.OccupantRepository,
 ) ChatService {
 	return &chatService{
+		db,
 		chatRepo,
 		occupantRepo,
 	}
@@ -33,7 +36,10 @@ func (s *chatService) Save(ctx context.Context, chat entity.Chat) (entity.Chat, 
 	if int8(len(chat.RoomID)) != entity.RoomIDLength {
 		return entity.Chat{}, &RoomErrInvalidRoomID{}
 	}
-	exists, err := s.occupantRepo.Exists(ctx, chat.RoomID, chat.Username)
+	tx, _ := s.db.Begin()
+	defer tx.Rollback()
+
+	exists, err := s.occupantRepo.Exists(ctx, tx, chat.RoomID, chat.Username)
 	if err != nil {
 		return entity.Chat{}, err
 	}
@@ -44,7 +50,11 @@ func (s *chatService) Save(ctx context.Context, chat entity.Chat) (entity.Chat, 
 	chat.CreatedAt = &timeNowUTC
 	chat.UpdatedAt = &timeNowUTC
 
-	return s.chatRepo.Save(ctx, chat)
+	chat, err = s.chatRepo.Save(ctx, tx, chat)
+	if err != nil {
+		return entity.Chat{}, err
+	}
+	return chat, tx.Commit()
 }
 
 // GetAll retrieves all of the chats belong to the specified room.
@@ -54,11 +64,18 @@ func (s *chatService) GetAll(ctx context.Context, roomID string) ([]entity.Chat,
 	}
 	username, _ := util.FromCtxUsername(ctx)
 
-	exists, err := s.occupantRepo.Exists(ctx, roomID, username)
+	tx, _ := s.db.Begin()
+	defer tx.Rollback()
+
+	exists, err := s.occupantRepo.Exists(ctx, tx, roomID, username)
 	if err != nil || !exists {
 		return nil, sql.ErrNoRows
 	}
-	return s.chatRepo.GetAll(ctx, roomID)
+	chats, err := s.chatRepo.GetAll(ctx, tx, roomID)
+	if err != nil {
+		return nil, err
+	}
+	return chats, tx.Commit()
 }
 
 // GetRecents retrieves the most recent messages from every chatroom this user belongs to.
@@ -68,10 +85,10 @@ func (s *chatService) GetRecents(ctx context.Context) ([]model.RecentChat, error
 	if !ok {
 		return nil, &util.ContextErrNotFound{}
 	}
-	return s.chatRepo.GetRecents(ctx, username)
+	return s.chatRepo.GetRecents(ctx, nil, username)
 }
 
 // Delete deletes a chat specified by chatID.
 func (s *chatService) Delete(ctx context.Context, chatID int) error {
-	return s.chatRepo.Delete(ctx, chatID)
+	return s.chatRepo.Delete(ctx, nil, chatID)
 }
