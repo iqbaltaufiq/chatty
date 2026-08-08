@@ -5,25 +5,26 @@ import (
 	"database/sql"
 )
 
-type occupantRepository struct {
-	db *sql.DB
-}
+type occupantRepository struct{}
 
 func NewOccupantRepository(db *sql.DB) OccupantRepository {
 	return &occupantRepository{db}
 }
 
 // Add assigns user to the room.
-func (r *occupantRepository) Add(ctx context.Context, roomID, username string) error {
+func (r *occupantRepository) Add(ctx context.Context, tx *sql.Tx, roomID, username string) (*sql.Tx, error) {
 	query := `
 	INSERT INTO occupants (room_id, username)
 	VALUES (?,?)
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return tx, err
+	}
 	defer stmt.Close()
 
-	_, err := stmt.ExecContext(ctx, roomID, username)
-	return err
+	_, err = stmt.ExecContext(ctx, roomID, username)
+	return tx, err
 }
 
 // Remove takes out user from the room.
