@@ -34,7 +34,7 @@ func (s *services) Occupant() service.OccupantService {
 }
 
 func (s *services) Relationship() service.RelationshipService {
-	return service.NewRelationshipService(s.repo.Relationship())
+	return service.NewRelationshipService(s.db, s.repo.Relationship())
 }
 
 func (s *services) Chat() service.ChatService {
