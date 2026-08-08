@@ -28,17 +28,20 @@ func (r *occupantRepository) Add(ctx context.Context, tx *sql.Tx, roomID, userna
 }
 
 // Remove takes out user from the room.
-func (r *occupantRepository) Remove(ctx context.Context, roomID, username string) error {
+func (r *occupantRepository) Remove(ctx context.Context, tx *sql.Tx, roomID, username string) (*sql.Tx, error) {
 	query := `
 	DELETE FROM occupants
 	WHERE room_id = ? AND username = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return tx, err
+	}
 	defer stmt.Close()
 
-	_, err := stmt.ExecContext(ctx, roomID, username)
-	return err
+	_, err = stmt.ExecContext(ctx, roomID, username)
+	return tx, err
 }
 
 // Exists checks if user exists in the specified room
