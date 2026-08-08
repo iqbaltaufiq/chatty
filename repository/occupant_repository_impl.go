@@ -12,23 +12,23 @@ func NewOccupantRepository() OccupantRepository {
 }
 
 // Add assigns user to the room.
-func (r *occupantRepository) Add(ctx context.Context, tx *sql.Tx, roomID, username string) (*sql.Tx, error) {
+func (r *occupantRepository) Add(ctx context.Context, tx *sql.Tx, roomID, username string) error {
 	query := `
 	INSERT INTO occupants (room_id, username)
 	VALUES (?,?)
 	`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
-		return tx, err
+		return err
 	}
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx, roomID, username)
-	return tx, err
+	return err
 }
 
 // Remove takes out user from the room.
-func (r *occupantRepository) Remove(ctx context.Context, tx *sql.Tx, roomID, username string) (*sql.Tx, error) {
+func (r *occupantRepository) Remove(ctx context.Context, tx *sql.Tx, roomID, username string) error {
 	query := `
 	DELETE FROM occupants
 	WHERE room_id = ? AND username = ?
@@ -36,16 +36,16 @@ func (r *occupantRepository) Remove(ctx context.Context, tx *sql.Tx, roomID, use
 	`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
-		return tx, err
+		return err
 	}
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx, roomID, username)
-	return tx, err
+	return err
 }
 
 // Exists checks if user exists in the specified room
-func (r *occupantRepository) Exists(ctx context.Context, tx *sql.Tx, roomID, username string) (*sql.Tx, bool, error) {
+func (r *occupantRepository) Exists(ctx context.Context, tx *sql.Tx, roomID, username string) (bool, error) {
 	query := `
 	SELECT COUNT(*) as 'rows'
 	FROM occupants
@@ -55,17 +55,17 @@ func (r *occupantRepository) Exists(ctx context.Context, tx *sql.Tx, roomID, use
 	exists := false
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
-		return tx, exists, err
+		return exists, err
 	}
 	defer stmt.Close()
 
 	rowsFound := 0
 	row := stmt.QueryRowContext(ctx, roomID, username)
 	if err := row.Scan(&rowsFound); err != nil {
-		return tx, exists, err
+		return exists, err
 	}
 	if rowsFound > 0 {
 		exists = true
 	}
-	return tx, exists, nil
+	return exists, nil
 }
