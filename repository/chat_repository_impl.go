@@ -18,12 +18,17 @@ func NewChatRepository(db *sql.DB) ChatRepository {
 }
 
 // Save stores a message into database.
-func (r *chatRepository) Save(ctx context.Context, chat entity.Chat) (entity.Chat, error) {
+func (r *chatRepository) Save(ctx context.Context, tx *sql.Tx, chat entity.Chat) (entity.Chat, error) {
 	query := `
 	INSERT INTO chats (username, room_id, message, created_at, updated_at)
 	VALUES (?,?,?,?,?)
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt := new(sql.Stmt)
+	if tx != nil {
+		stmt, _ = tx.PrepareContext(ctx, query)
+	} else {
+		stmt, _ = r.db.PrepareContext(ctx, query)
+	}
 	defer stmt.Close()
 
 	row, err := stmt.ExecContext(
@@ -43,13 +48,18 @@ func (r *chatRepository) Save(ctx context.Context, chat entity.Chat) (entity.Cha
 }
 
 // Delete removes a message from database.
-func (r *chatRepository) Delete(ctx context.Context, chatID int) error {
+func (r *chatRepository) Delete(ctx context.Context, tx *sql.Tx, chatID int) error {
 	query := `
 	DELETE FROM chats
 	WHERE id = ? AND username = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt := new(sql.Stmt)
+	if tx != nil {
+		stmt, _ = tx.PrepareContext(ctx, query)
+	} else {
+		stmt, _ = r.db.PrepareContext(ctx, query)
+	}
 	defer stmt.Close()
 
 	username, _ := util.FromCtxUsername(ctx)
@@ -64,7 +74,7 @@ func (r *chatRepository) Delete(ctx context.Context, chatID int) error {
 }
 
 // GetAll retrieves all the messages that belongs to a room.
-func (r *chatRepository) GetAll(ctx context.Context, roomID string) ([]entity.Chat, error) {
+func (r *chatRepository) GetAll(ctx context.Context, tx *sql.Tx, roomID string) ([]entity.Chat, error) {
 	const MaxRows int = 25
 	query := `
 	SELECT id, username, message, room_id, created_at, updated_at
@@ -72,7 +82,12 @@ func (r *chatRepository) GetAll(ctx context.Context, roomID string) ([]entity.Ch
 	WHERE room_id = ?
 	LIMIT ?
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt := new(sql.Stmt)
+	if tx != nil {
+		stmt, _ = tx.PrepareContext(ctx, query)
+	} else {
+		stmt, _ = r.db.PrepareContext(ctx, query)
+	}
 	defer stmt.Close()
 
 	rows, err := stmt.QueryContext(ctx, roomID, MaxRows)
@@ -100,7 +115,7 @@ func (r *chatRepository) GetAll(ctx context.Context, roomID string) ([]entity.Ch
 }
 
 // GetRecents retrieves the most recent messages from every room this user belongs to.
-func (r *chatRepository) GetRecents(ctx context.Context, username string) ([]model.RecentChat, error) {
+func (r *chatRepository) GetRecents(ctx context.Context, tx *sql.Tx, username string) ([]model.RecentChat, error) {
 	query := `
 	SELECT 
 		ch.id,
@@ -122,7 +137,12 @@ func (r *chatRepository) GetRecents(ctx context.Context, username string) ([]mod
 	JOIN users u ON u.username = o_exc.username
 	ORDER BY ch.id DESC
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt := new(sql.Stmt)
+	if tx != nil {
+		stmt, _ = tx.PrepareContext(ctx, query)
+	} else {
+		stmt, _ = r.db.PrepareContext(ctx, query)
+	}
 	defer stmt.Close()
 
 	rows, err := stmt.QueryContext(ctx, username, username)
