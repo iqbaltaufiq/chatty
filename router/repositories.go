@@ -29,7 +29,7 @@ func (r *repositories) Relationship() repository.RelationshipRepository {
 }
 
 func (r *repositories) Occupant() repository.OccupantRepository {
-	return repository.NewOccupantRepository(r.db)
+	return repository.NewOccupantRepository()
 }
 
 func (r *repositories) Chat() repository.ChatRepository {

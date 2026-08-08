@@ -1,13 +1,18 @@
 package router
 
-import "chatty/service"
+import (
+	"database/sql"
+
+	"chatty/service"
+)
 
 type services struct {
+	db   *sql.DB
 	repo *repositories
 }
 
-func NewServices(repo *repositories) *services {
-	return &services{repo}
+func NewServices(db *sql.DB, repo *repositories) *services {
+	return &services{db, repo}
 }
 
 // Write down all of the services as method name below.
@@ -25,7 +30,7 @@ func (s *services) Room() service.RoomService {
 }
 
 func (s *services) Occupant() service.OccupantService {
-	return service.NewOccupantService(s.repo.Occupant())
+	return service.NewOccupantService(s.db, s.repo.Occupant())
 }
 
 func (s *services) Relationship() service.RelationshipService {
