@@ -17,25 +17,35 @@ func NewRelationshipRepository(db *sql.DB) RelationshipRepository {
 }
 
 // Add befriends initiator with the target.
-func (r *relationshipRepository) Add(ctx context.Context, initiator, target string) error {
+func (r *relationshipRepository) Add(ctx context.Context, tx *sql.Tx, initiator, target string) error {
 	query := `
 	INSERT INTO relationships (initiator, target)
 	VALUES (?,?)
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt := new(sql.Stmt)
+	if tx != nil {
+		stmt, _ = tx.PrepareContext(ctx, query)
+	} else {
+		stmt, _ = r.db.PrepareContext(ctx, query)
+	}
 	defer stmt.Close()
 
 	_, err := stmt.ExecContext(ctx, initiator, target)
 	return err
 }
 
-func (r *relationshipRepository) Remove(ctx context.Context, self, target string) error {
+func (r *relationshipRepository) Remove(ctx context.Context, tx *sql.Tx, self, target string) error {
 	query := `
 	DELETE FROM relationships
 	WHERE initiator = ? AND target = ? OR initiator = ? AND target = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt := new(sql.Stmt)
+	if tx != nil {
+		stmt, _ = tx.PrepareContext(ctx, query)
+	} else {
+		stmt, _ = r.db.PrepareContext(ctx, query)
+	}
 	defer stmt.Close()
 
 	_, err := stmt.ExecContext(
@@ -47,7 +57,7 @@ func (r *relationshipRepository) Remove(ctx context.Context, self, target string
 }
 
 // Remove removes relationship between two users.
-func (r *relationshipRepository) RemoveByID(ctx context.Context, relationshipID int) error {
+func (r *relationshipRepository) RemoveByID(ctx context.Context, tx *sql.Tx, relationshipID int) error {
 	fetchQuery := `
 	SELECT COUNT(*) AS 'rowCount'
 	FROM relationships
@@ -59,9 +69,6 @@ func (r *relationshipRepository) RemoveByID(ctx context.Context, relationshipID 
 	WHERE id = ?
 	LIMIT 1
 	`
-	tx, _ := r.db.Begin()
-	defer tx.Rollback()
-
 	var (
 		self, _   = util.FromCtxUsername(ctx)
 		rowCount  = 0
@@ -77,18 +84,23 @@ func (r *relationshipRepository) RemoveByID(ctx context.Context, relationshipID 
 	if _, err := tx.ExecContext(ctx, deleteQuery, relationshipID); err != nil {
 		return err
 	}
-	return tx.Commit()
+	return nil
 }
 
 // Exists checks if two users have befriended with each other.
-func (r *relationshipRepository) Exists(ctx context.Context, initiator, target string) (bool, error) {
+func (r *relationshipRepository) Exists(ctx context.Context, tx *sql.Tx, initiator, target string) (bool, error) {
 	query := `
 	SELECT COUNT(*) as 'rowsCount'
 	FROM relationships
 	WHERE (initiator = ? AND target = ?) OR (initiator = ? AND target = ?)
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt := new(sql.Stmt)
+	if tx != nil {
+		stmt, _ = tx.PrepareContext(ctx, query)
+	} else {
+		stmt, _ = r.db.PrepareContext(ctx, query)
+	}
 	defer stmt.Close()
 
 	args := []any{initiator, target, target, initiator}
@@ -106,7 +118,7 @@ func (r *relationshipRepository) Exists(ctx context.Context, initiator, target s
 }
 
 // GetFriends retrieves a list of users that have relationship with the specified user.
-func (r *relationshipRepository) GetFriends(ctx context.Context, username string) ([]model.Friend, error) {
+func (r *relationshipRepository) GetFriends(ctx context.Context, tx *sql.Tx, username string) ([]model.Friend, error) {
 	query := `
 	SELECT source.id, o.room_id, u.uuid, source.username, u.fullname, u.photo
 	FROM (
@@ -122,7 +134,12 @@ func (r *relationshipRepository) GetFriends(ctx context.Context, username string
 	LEFT JOIN occupants o ON o.username = source.username AND o.room_id IN (SELECT room_id FROM occupants WHERE username = ?)
 	ORDER BY u.fullname ASC
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
+	stmt := new(sql.Stmt)
+	if tx != nil {
+		stmt, _ = tx.PrepareContext(ctx, query)
+	} else {
+		stmt, _ = r.db.PrepareContext(ctx, query)
+	}
 	defer stmt.Close()
 
 	args := [3]any{username, username, username}
