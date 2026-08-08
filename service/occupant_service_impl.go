@@ -32,15 +32,14 @@ func (s *occupantService) Add(ctx context.Context, roomID, username string) erro
 	tx, _ := s.db.Begin()
 	defer tx.Rollback()
 
-	tx, exists, err := s.occupantRepo.Exists(ctx, tx, roomID, username)
+	exists, err := s.occupantRepo.Exists(ctx, tx, roomID, username)
 	if err != nil {
 		return err
 	}
 	if exists {
 		return &RowsErrAlreadyExists{}
 	}
-	tx, err = s.occupantRepo.Add(ctx, tx, roomID, username)
-	if err != nil {
+	if err := s.occupantRepo.Add(ctx, tx, roomID, username); err != nil {
 		return err
 	}
 	return tx.Commit()
@@ -55,12 +54,11 @@ func (s *occupantService) Remove(ctx context.Context, roomID, username string) e
 	tx, _ := s.db.Begin()
 	defer tx.Rollback()
 
-	tx, exists, err := s.occupantRepo.Exists(ctx, tx, roomID, username)
+	exists, err := s.occupantRepo.Exists(ctx, tx, roomID, username)
 	if err != nil || !exists {
 		return sql.ErrNoRows
 	}
-	tx, err = s.occupantRepo.Remove(ctx, tx, roomID, username)
-	if err != nil {
+	if err := s.occupantRepo.Remove(ctx, tx, roomID, username); err != nil {
 		return err
 	}
 	return tx.Commit()
