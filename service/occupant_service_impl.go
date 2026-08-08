@@ -51,9 +51,17 @@ func (s *occupantService) Add(ctx context.Context, roomID, username string) erro
 func (s *occupantService) Remove(ctx context.Context, roomID, username string) error {
 	roomID = strings.TrimSpace(roomID)
 	username = strings.TrimSpace(username)
-	exists, err := s.occupantRepo.Exists(ctx, roomID, username)
+
+	tx, _ := s.db.Begin()
+	defer tx.Rollback()
+
+	tx, exists, err := s.occupantRepo.Exists(ctx, tx, roomID, username)
 	if err != nil || !exists {
 		return sql.ErrNoRows
 	}
-	return s.occupantRepo.Remove(ctx, roomID, username)
+	tx, err = s.occupantRepo.Remove(ctx, tx, roomID, username)
+	if err != nil {
+		return err
+	}
+	return tx.Commit()
 }
