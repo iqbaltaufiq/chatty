@@ -7,8 +7,8 @@ import (
 
 type occupantRepository struct{}
 
-func NewOccupantRepository(db *sql.DB) OccupantRepository {
-	return &occupantRepository{db}
+func NewOccupantRepository() OccupantRepository {
+	return &occupantRepository{}
 }
 
 // Add assigns user to the room.
