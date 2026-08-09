@@ -17,7 +17,7 @@ func NewRepositories(db *sql.DB) *repositories {
 // Write down each of the repository as a method name below.
 
 func (r *repositories) User() repository.UserRepository {
-	return repository.NewUserRepository(r.db)
+	return repository.NewUserRepository()
 }
 
 func (r *repositories) Room() repository.RoomRepository {
