@@ -2,17 +2,14 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 
 	"chatty/entity"
 )
 
-type roomRepository struct {
-	db *sql.DB
-}
+type roomRepository struct{}
 
-func NewRoomRepository(db *sql.DB) RoomRepository {
-	return &roomRepository{db}
+func NewRoomRepository() RoomRepository {
+	return &roomRepository{}
 }
 
 // Create inserts a newly created room into db.
