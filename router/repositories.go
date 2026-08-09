@@ -1,17 +1,13 @@
 package router
 
 import (
-	"database/sql"
-
 	"chatty/repository"
 )
 
-type repositories struct {
-	db *sql.DB
-}
+type repositories struct{}
 
-func NewRepositories(db *sql.DB) *repositories {
-	return &repositories{db}
+func NewRepositories() *repositories {
+	return &repositories{}
 }
 
 // Write down each of the repository as a method name below.
@@ -33,7 +29,7 @@ func (r *repositories) Occupant() repository.OccupantRepository {
 }
 
 func (r *repositories) Chat() repository.ChatRepository {
-	return repository.NewChatRepository(r.db)
+	return repository.NewChatRepository()
 }
 
 func (r *repositories) File() repository.FileRepository {
