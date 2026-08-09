@@ -4,23 +4,33 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+	"time"
 
+	"chatty/entity"
 	"chatty/model"
+	customerrors "chatty/model/custom_errors"
 	"chatty/repository"
+	"chatty/util"
 )
 
 type relationshipService struct {
 	db               *sql.DB
 	relationshipRepo repository.RelationshipRepository
+	roomRepo         repository.RoomRepository
+	occupantRepo     repository.OccupantRepository
 }
 
 func NewRelationshipService(
 	db *sql.DB,
 	relationshipRepo repository.RelationshipRepository,
+	roomRepo repository.RoomRepository,
+	occupantRepo repository.OccupantRepository,
 ) RelationshipService {
 	return &relationshipService{
 		db,
 		relationshipRepo,
+		roomRepo,
+		occupantRepo,
 	}
 }
 
@@ -39,9 +49,29 @@ func (s *relationshipService) Add(ctx context.Context, initiator, target string)
 		return err
 	}
 	if exists {
-		return &RowsErrAlreadyExists{}
+		return &customerrors.RowsErrAlreadyExists{}
 	}
 	if err := s.relationshipRepo.Add(ctx, tx, initiator, target); err != nil {
+		return err
+	}
+	roomID := ""
+	for {
+		roomID = util.GenerateAlphanumeric(int(entity.RoomIDLength))
+		if exists, _ := s.roomRepo.Exists(ctx, tx, roomID); !exists {
+			current := time.Now().UTC()
+			s.roomRepo.Create(ctx, tx, entity.Room{
+				ID:        roomID,
+				Name:      "New Chatroom",
+				IsPrivate: true,
+				CreatedAt: &current,
+			})
+			break
+		}
+	}
+	if err := s.occupantRepo.Add(ctx, tx, roomID, initiator); err != nil {
+		return err
+	}
+	if err := s.occupantRepo.Add(ctx, tx, roomID, target); err != nil {
 		return err
 	}
 	return tx.Commit()
@@ -72,11 +102,11 @@ func (s *relationshipService) Remove(ctx context.Context, initiator, target stri
 
 // RemoveByID unfriends two users referenced by their relationshipID.
 func (s *relationshipService) RemoveByID(ctx context.Context, relationshipID int) error {
-	return s.relationshipRepo.RemoveByID(ctx, nil, relationshipID)
+	return s.relationshipRepo.RemoveByID(ctx, s.db, relationshipID)
 }
 
 // GetFriends retrieves a list of friends that belongs to the user.
 func (s *relationshipService) GetFriends(ctx context.Context, username string) ([]model.Friend, error) {
 	username = strings.TrimSpace(username)
-	return s.relationshipRepo.GetFriends(ctx, nil, username)
+	return s.relationshipRepo.GetFriends(ctx, s.db, username)
 }
