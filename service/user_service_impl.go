@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"chatty/entity"
@@ -10,18 +11,23 @@ import (
 )
 
 type userService struct {
+	db       *sql.DB
 	userRepo repository.UserRepository
 }
 
-func NewUserService(userRepo repository.UserRepository) UserService {
+func NewUserService(
+	db *sql.DB,
+	userRepo repository.UserRepository,
+) UserService {
 	return &userService{
+		db,
 		userRepo,
 	}
 }
 
 // GetUser retrieves user based on their username.
 func (s *userService) GetUser(ctx context.Context, username string) (entity.User, error) {
-	return s.userRepo.GetUser(ctx, username)
+	return s.userRepo.GetUser(ctx, s.db, username)
 }
 
 // GetUserByUUID retrieves user based on their UUID.
@@ -31,13 +37,13 @@ func (s *userService) GetUserByUUID(ctx context.Context, uuid string) (entity.Us
 	if err != nil {
 		return entity.User{}, err
 	}
-	return s.userRepo.GetUserByUUID(ctx, binaryUUID)
+	return s.userRepo.GetUserByUUID(ctx, s.db, binaryUUID)
 }
 
 // UpdateFullname changes a user's full name.
 func (s *userService) UpdateFullname(ctx context.Context, username, fullname string) error {
 	fullname = strings.TrimSpace(fullname)
-	return s.userRepo.UpdateFullname(ctx, username, fullname)
+	return s.userRepo.UpdateFullname(ctx, s.db, username, fullname)
 }
 
 // UpdatePhoto changes a user's profile photo.
@@ -49,5 +55,5 @@ func (s *userService) UpdatePhoto(ctx context.Context, username, photo string) e
 	if err != nil {
 		return err
 	}
-	return s.userRepo.UpdatePhoto(ctx, username, hashedFilename)
+	return s.userRepo.UpdatePhoto(ctx, s.db, username, hashedFilename)
 }

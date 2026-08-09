@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"io"
 
 	"chatty/entity"
@@ -12,15 +13,18 @@ import (
 )
 
 type authService struct {
+	db       *sql.DB
 	userRepo repository.UserRepository
 	fileRepo repository.FileRepository
 }
 
 func NewAuthService(
+	db *sql.DB,
 	userRepo repository.UserRepository,
 	fileRepo repository.FileRepository,
 ) AuthService {
 	return &authService{
+		db,
 		userRepo,
 		fileRepo,
 	}
@@ -56,7 +60,7 @@ func (s *authService) CreateUser(ctx context.Context, user entity.User, file io.
 	user.Password = hashPwd
 	user.UUID = util.GenerateUUID()
 
-	if err := s.userRepo.CreateUser(ctx, user); err != nil {
+	if err := s.userRepo.CreateUser(ctx, s.db, user); err != nil {
 		return err
 	}
 	if fileExists {
@@ -73,7 +77,7 @@ func (s *authService) CreateUser(ctx context.Context, user entity.User, file io.
 
 // ValidateCreds checks if password from request matches the password stored in database.
 func (s *authService) ValidateCreds(ctx context.Context, creds model.Credential) error {
-	dbPassword, err := s.userRepo.GetPassword(ctx, creds.Username)
+	dbPassword, err := s.userRepo.GetPassword(ctx, s.db, creds.Username)
 	if err != nil {
 		return err
 	}
