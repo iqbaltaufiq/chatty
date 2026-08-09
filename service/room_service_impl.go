@@ -11,11 +11,15 @@ import (
 )
 
 type roomService struct {
+	db       *sql.DB
 	roomRepo repository.RoomRepository
 }
 
-func NewRoomService(roomRepo repository.RoomRepository) RoomService {
-	return &roomService{roomRepo}
+func NewRoomService(
+	db *sql.DB,
+	roomRepo repository.RoomRepository,
+) RoomService {
+	return &roomService{db, roomRepo}
 }
 
 // Create generates 6-digits unique ID for room ID
@@ -26,9 +30,11 @@ func NewRoomService(roomRepo repository.RoomRepository) RoomService {
 func (s *roomService) Create(ctx context.Context, room entity.Room) (string, error) {
 	roomID := ""
 	roomIDLength := 6
+	tx, _ := s.db.BeginTx(ctx, nil)
+	defer tx.Rollback()
 	for {
 		roomID = util.GenerateAlphanumeric(roomIDLength)
-		exists, _ := s.roomRepo.Exists(ctx, roomID)
+		exists, _ := s.roomRepo.Exists(ctx, tx, roomID)
 		if !exists {
 			break
 		}
@@ -40,7 +46,10 @@ func (s *roomService) Create(ctx context.Context, room entity.Room) (string, err
 		room.Name = strings.TrimSpace(room.Name)
 	}
 	room.IsPrivate = true
-	return roomID, s.roomRepo.Create(ctx, room)
+	if err := s.roomRepo.Create(ctx, tx, room); err != nil {
+		return "", err
+	}
+	return roomID, tx.Commit()
 }
 
 // UpdateName changes the name of the room.
@@ -51,9 +60,14 @@ func (s *roomService) UpdateName(ctx context.Context, roomID, roomName string) e
 	if len(roomID) != 6 {
 		return &RoomErrInvalidRoomID{}
 	}
-	exists, err := s.roomRepo.Exists(ctx, roomID)
+	tx, _ := s.db.BeginTx(ctx, nil)
+	defer tx.Rollback()
+	exists, err := s.roomRepo.Exists(ctx, tx, roomID)
 	if err != nil || !exists {
 		return sql.ErrNoRows
 	}
-	return s.roomRepo.UpdateName(ctx, roomID, roomName)
+	if err := s.roomRepo.UpdateName(ctx, tx, roomID, roomName); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
