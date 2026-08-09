@@ -26,7 +26,7 @@ func (s *services) Auth() service.AuthService {
 }
 
 func (s *services) Room() service.RoomService {
-	return service.NewRoomService(s.repo.Room())
+	return service.NewRoomService(s.db, s.repo.Room())
 }
 
 func (s *services) Occupant() service.OccupantService {
@@ -34,7 +34,12 @@ func (s *services) Occupant() service.OccupantService {
 }
 
 func (s *services) Relationship() service.RelationshipService {
-	return service.NewRelationshipService(s.db, s.repo.Relationship())
+	return service.NewRelationshipService(
+		s.db,
+		s.repo.Relationship(),
+		s.repo.Room(),
+		s.repo.Occupant(),
+	)
 }
 
 func (s *services) Chat() service.ChatService {

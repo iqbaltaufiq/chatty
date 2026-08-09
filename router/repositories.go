@@ -21,11 +21,11 @@ func (r *repositories) User() repository.UserRepository {
 }
 
 func (r *repositories) Room() repository.RoomRepository {
-	return repository.NewRoomRepository(r.db)
+	return repository.NewRoomRepository()
 }
 
 func (r *repositories) Relationship() repository.RelationshipRepository {
-	return repository.NewRelationshipRepository(r.db)
+	return repository.NewRelationshipRepository()
 }
 
 func (r *repositories) Occupant() repository.OccupantRepository {
