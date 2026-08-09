@@ -2,40 +2,33 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"chatty/entity"
 	"chatty/util"
 )
 
-type userRepository struct {
-	db *sql.DB
-}
+type userRepository struct{}
 
-func NewUserRepository(db *sql.DB) UserRepository {
-	return &userRepository{db}
+func NewUserRepository() UserRepository {
+	return &userRepository{}
 }
 
 // CreateUser creates new user into DB
-func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error {
+func (r *userRepository) CreateUser(ctx context.Context, dbtx DBTX, user entity.User) error {
 	query := `
 	INSERT INTO users (uuid, username, fullname, email, password, photo)
 	VALUES (?,?,?,?,?,?)
 	`
-
 	// column `uuid` has BINARY(16) data type.
 	// convert UUID string to binary before storing.
 	binaryID, err := util.UUIDtoBinary(user.UUID)
 	if err != nil {
 		return err
 	}
-
-	stmt, _ := r.db.PrepareContext(ctx, query)
-	defer stmt.Close()
-
-	_, err = stmt.ExecContext(
+	_, err = dbtx.ExecContext(
 		ctx,
+		query,
 		binaryID,
 		user.Username,
 		user.Fullname,
@@ -48,36 +41,30 @@ func (r *userRepository) CreateUser(ctx context.Context, user entity.User) error
 
 // GetPassword should only be used for authentication purpose.
 // It returns the user's password.
-func (r *userRepository) GetPassword(ctx context.Context, username string) (string, error) {
+func (r *userRepository) GetPassword(ctx context.Context, dbtx DBTX, username string) (string, error) {
 	query := `
 	SELECT password
 	FROM users
 	WHERE username = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
-	defer stmt.Close()
-
 	var password string
-	row := stmt.QueryRowContext(ctx, username)
+	row := dbtx.QueryRowContext(ctx, query, username)
 	err := row.Scan(&password)
 	return password, err
 }
 
 // GetUser retrieves a user from database identified by their username, excluding password and deleted_at.
-func (r *userRepository) GetUser(ctx context.Context, username string) (entity.User, error) {
+func (r *userRepository) GetUser(ctx context.Context, dbtx DBTX, username string) (entity.User, error) {
 	query := `
 	SELECT uuid, username, fullname, email, photo, created_at, updated_at
 	FROM users
 	WHERE username = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
-	defer stmt.Close()
-
 	var binaryUUID []byte
 	var user entity.User
-	if err := stmt.QueryRowContext(ctx, username).
+	if err := dbtx.QueryRowContext(ctx, query, username).
 		Scan(
 			&binaryUUID,
 			&user.Username,
@@ -102,19 +89,16 @@ func (r *userRepository) GetUser(ctx context.Context, username string) (entity.U
 }
 
 // GetUserByUUID retrieves a user identified by uuid, excluding password and deleted_at.
-func (r *userRepository) GetUserByUUID(ctx context.Context, uuid []byte) (entity.User, error) {
+func (r *userRepository) GetUserByUUID(ctx context.Context, dbtx DBTX, uuid []byte) (entity.User, error) {
 	query := `
 	SELECT uuid, username, fullname, email, photo, created_at, updated_at
 	FROM users
 	WHERE uuid = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
-	defer stmt.Close()
-
 	var uuidBinary []byte
 	var user entity.User
-	if err := stmt.QueryRowContext(ctx, uuid).
+	if err := dbtx.QueryRowContext(ctx, query, uuid).
 		Scan(
 			&uuidBinary,
 			&user.Username,
@@ -139,18 +123,16 @@ func (r *userRepository) GetUserByUUID(ctx context.Context, uuid []byte) (entity
 }
 
 // UpdateFullname update user's full name identified by username.
-func (r *userRepository) UpdateFullname(ctx context.Context, username, fullname string) error {
+func (r *userRepository) UpdateFullname(ctx context.Context, dbtx DBTX, username, fullname string) error {
 	query := `
 	UPDATE users
 	SET fullname = ?, updated_at = ?
 	WHERE username = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
-	defer stmt.Close()
-
-	_, err := stmt.ExecContext(
+	_, err := dbtx.ExecContext(
 		ctx,
+		query,
 		fullname,
 		time.Now().UTC(),
 		username,
@@ -159,18 +141,16 @@ func (r *userRepository) UpdateFullname(ctx context.Context, username, fullname 
 }
 
 // UpdatePhoto update the stored filename of a user's profile photo.
-func (r *userRepository) UpdatePhoto(ctx context.Context, username, photo string) error {
+func (r *userRepository) UpdatePhoto(ctx context.Context, dbtx DBTX, username, photo string) error {
 	query := `
 	UPDATE users
 	SET photo = ?, updated_at = ?
 	WHERE username = ?
 	LIMIT 1
 	`
-	stmt, _ := r.db.PrepareContext(ctx, query)
-	defer stmt.Close()
-
-	_, err := stmt.ExecContext(
+	_, err := dbtx.ExecContext(
 		ctx,
+		query,
 		photo,
 		time.Now().UTC(),
 		username,
