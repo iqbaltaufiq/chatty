@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 
 	"chatty/entity"
 )
@@ -56,4 +57,24 @@ func (r *roomRepository) Exists(ctx context.Context, dbtx DBTX, roomID string) (
 		exists = true
 	}
 	return exists, nil
+}
+
+func (r *roomRepository) Delete(ctx context.Context, dbtx DBTX, roomID string) error {
+	query := `
+	DELETE FROM rooms
+	WHERE id = ?
+	LIMIT 1
+	`
+	result, err := dbtx.ExecContext(ctx, query, roomID)
+	if err != nil {
+		return err
+	}
+	numRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if numRows == 0 {
+		return sql.ErrNoRows
+	}
+	return err
 }
