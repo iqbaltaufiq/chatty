@@ -71,3 +71,7 @@ func (s *roomService) UpdateName(ctx context.Context, roomID, roomName string) e
 	}
 	return tx.Commit()
 }
+
+func (s *roomService) Delete(ctx context.Context, roomID string) error {
+	return s.roomRepo.Delete(ctx, s.db, roomID)
+}

@@ -9,4 +9,5 @@ import (
 type RoomService interface {
 	Create(ctx context.Context, room entity.Room) (string, error)
 	UpdateName(ctx context.Context, roomID, roomName string) error
+	Delete(ctx context.Context, roomID string) error
 }

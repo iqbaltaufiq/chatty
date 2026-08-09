@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"chatty/entity"
+	customerrors "chatty/model/custom_errors"
 	"chatty/service"
 	"chatty/util"
 )
@@ -60,5 +61,20 @@ func (h *roomHandler) UpdateName(w http.ResponseWriter, r *http.Request) {
 	}
 	util.JSONSuccess(w, http.StatusOK, util.M{
 		"message": "Room has been updated successfully.",
+	})
+}
+
+func (h *roomHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	roomID := r.PathValue("roomID")
+	if roomID == "" {
+		util.JSONError(w, http.StatusBadRequest, &customerrors.ErrNoPathValue{})
+		return
+	}
+	if err := h.roomService.Delete(r.Context(), roomID); err != nil {
+		util.JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	util.JSONSuccess(w, http.StatusOK, util.M{
+		"message": "room has been deleted successfully",
 	})
 }
