@@ -85,10 +85,10 @@ func (s *chatService) GetRecents(ctx context.Context) ([]model.RecentChat, error
 	if !ok {
 		return nil, &util.ContextErrNotFound{}
 	}
-	return s.chatRepo.GetRecents(ctx, nil, username)
+	return s.chatRepo.GetRecents(ctx, s.db, username)
 }
 
 // Delete deletes a chat specified by chatID.
 func (s *chatService) Delete(ctx context.Context, chatID int) error {
-	return s.chatRepo.Delete(ctx, nil, chatID)
+	return s.chatRepo.Delete(ctx, s.db, chatID)
 }
