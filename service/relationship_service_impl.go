@@ -57,7 +57,11 @@ func (s *relationshipService) Add(ctx context.Context, initiator, target string)
 	roomID := ""
 	for {
 		roomID = util.GenerateAlphanumeric(int(entity.RoomIDLength))
-		if exists, _ := s.roomRepo.Exists(ctx, tx, roomID); !exists {
+		exists, err := s.roomRepo.Exists(ctx, tx, roomID)
+		if err != nil {
+			return err
+		}
+		if !exists {
 			break
 		}
 	}
