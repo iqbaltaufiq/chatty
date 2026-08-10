@@ -1,4 +1,4 @@
-import { createChatBubble } from "./component.js";
+import { createChatBubble, updateRecentChats } from "./component.js";
 import type { AppState, Message } from "./types.ts"
 
 const wsUrl: string = "ws://localhost:8000/websocket";
@@ -29,6 +29,7 @@ function receiveMessage(state: AppState, message: MessageEvent): void {
     const isTheChatOpened = chat.room_id === state.room?.id;
     console.log({chat});
 
+    // append new chat bubble into chat field.
     if (isChat && isTheChatOpened) {
         const newBubble = createChatBubble(state, chat);
         if (newBubble) {
@@ -39,6 +40,7 @@ function receiveMessage(state: AppState, message: MessageEvent): void {
             }
         }
     }
+    updateRecentChats(state, chat);
 }
 
 export function send(chat: Message): void {
