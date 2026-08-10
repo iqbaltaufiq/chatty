@@ -10,6 +10,21 @@ func NewOccupantRepository() OccupantRepository {
 	return &occupantRepository{}
 }
 
+func (r *occupantRepository) GetRoomBetweenUsers(ctx context.Context, dbtx DBTX, firstUser, secondUser string) (string, error) {
+	query := `
+	SELECT room_id
+	FROM occupants
+	WHERE username = ?
+	INTERSECT
+	SELECT room_id
+	FROM occupants
+	WHERE username = ?
+	`
+	roomID := ""
+	err := dbtx.QueryRowContext(ctx, query, firstUser, secondUser).Scan(&roomID)
+	return roomID, err
+}
+
 // Add assigns user to the room.
 func (r *occupantRepository) Add(ctx context.Context, dbtx DBTX, roomID, username string) error {
 	query := `
