@@ -78,6 +78,7 @@ func (s *relationshipService) Add(ctx context.Context, initiator, target string)
 }
 
 // Remove unfriends both users.
+// It deletes the relationship and the 1-on-1 chatroom including all the chats.
 //
 // Returns error if they haven't become friends yet.
 func (s *relationshipService) Remove(ctx context.Context, initiator, target string) error {
@@ -87,14 +88,11 @@ func (s *relationshipService) Remove(ctx context.Context, initiator, target stri
 	tx, _ := s.db.Begin()
 	defer tx.Rollback()
 
-	exists, err := s.relationshipRepo.Exists(ctx, tx, initiator, target)
-	if err != nil {
+	if err := s.relationshipRepo.Remove(ctx, tx, initiator, target); err != nil {
 		return err
 	}
-	if !exists {
-		return sql.ErrNoRows
-	}
-	if err := s.relationshipRepo.Remove(ctx, tx, initiator, target); err != nil {
+	roomID, _ := s.occupantRepo.GetRoomBetweenUsers(ctx, tx, initiator, target)
+	if err := s.roomRepo.Delete(ctx, tx, roomID); err != nil {
 		return err
 	}
 	return tx.Commit()
