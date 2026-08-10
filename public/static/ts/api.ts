@@ -1,16 +1,22 @@
 import type { Chat, Friend, RecentChat, User } from "./types.ts";
 
-export async function getUser(): Promise<User | null> {
-    const response = await fetch("/api/user/get");
-    const json = await response.json();
+export async function getUser(identifier: string | null = null): Promise<User | null> {
+    try {
+        let url = "/api/user/get";
+        if (identifier) url = `/api/user/${identifier}/get`;
 
-    if (!response.ok) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("user not found");
+
+        const json = await response.json();
+        const user: User = json.data?.user;
+        return user
+    } catch (error) {
         window.location.href = "/login";
         console.log("we cannot find your record");
+        console.error(error);
         return null
     }
-    const user: User = json.data?.user;
-    return user;
 }
 
 export async function getRecentChats(): Promise<RecentChat[] | null> {
