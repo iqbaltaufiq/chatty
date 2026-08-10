@@ -58,16 +58,16 @@ func (s *relationshipService) Add(ctx context.Context, initiator, target string)
 	for {
 		roomID = util.GenerateAlphanumeric(int(entity.RoomIDLength))
 		if exists, _ := s.roomRepo.Exists(ctx, tx, roomID); !exists {
-			current := time.Now().UTC()
-			s.roomRepo.Create(ctx, tx, entity.Room{
-				ID:        roomID,
-				Name:      "New Chatroom",
-				IsPrivate: true,
-				CreatedAt: &current,
-			})
 			break
 		}
 	}
+	current := time.Now().UTC()
+	s.roomRepo.Create(ctx, tx, entity.Room{
+		ID:        roomID,
+		Name:      "New Chatroom",
+		IsPrivate: true,
+		CreatedAt: &current,
+	})
 	if err := s.occupantRepo.Add(ctx, tx, roomID, initiator); err != nil {
 		return err
 	}
