@@ -3,29 +3,43 @@ import type { AppState, Message } from "./types.ts";
 import { logout } from "./api.js";
 
 export function registerHandler(state: AppState): void {
-    send(state);
+    handleSend(state);
     handleLogout(state);
 }
 
-function send(state: AppState) {
-    const form: HTMLElement | null = document.getElementById("chat-form");
-    form?.addEventListener("submit", event => {
+function handleSend(state: AppState): void {
+    const form = document.getElementById("chat-form");
+    if (!form) return;
+    const textarea = form.querySelector("textarea");
+    if (!textarea) return;
+    form.addEventListener("submit", event => {
         event.preventDefault();
-        const message = document.querySelector("textarea")?.value.trim();
-        const newChat: Message = {
-            id: null,
-            username: state.user?.username || "",
-            room_id: state.room?.id || "",
-            type: "chat",
-            message: message || "",
-            created_at: new Date(),
-            audiences: [
-                state.user?.username || "",
-                state.room?.username || "",
-            ]
-        }
-        wsSend(newChat);
+        send(state, textarea);
     });
+    textarea.addEventListener("keydown", event => {
+        if (event.key === "Enter" && event.shiftKey === false) {
+            event.preventDefault();
+            send(state, textarea);
+        }
+    });
+}
+
+function send(state: AppState, textarea: HTMLTextAreaElement) {
+    const message = textarea.value.trim();
+    const newChat: Message = {
+        id: null,
+        username: state.user?.username || "",
+        room_id: state.room?.id || "",
+        type: "chat",
+        message: message || "",
+        created_at: new Date(),
+        audiences: [
+            state.user?.username || "",
+            state.room?.username || "",
+        ]
+    }
+    wsSend(newChat);
+    textarea.value = "";
 }
 
 function handleLogout(state: AppState): void {
