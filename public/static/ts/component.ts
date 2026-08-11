@@ -188,11 +188,14 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
     }
     if (chatArea) chatArea.scrollTop = chatArea.scrollHeight;
 
-    const chatInput: HTMLTextAreaElement | null =
-        document.querySelector(".chat-input textarea");
-    if (chatInput) chatInput.disabled = false;
+    const chatInput: HTMLElement | null =
+        document.querySelector(".chat-input");
+    if (!chatInput) return;
+    chatInput.style.display = "block";
 
-    const submitBtn: HTMLButtonElement | null =
-        document.querySelector(".chat-input button");
+    const textarea = chatInput.querySelector("textarea");
+    if (textarea) textarea.disabled = false;
+
+    const submitBtn = chatInput.querySelector("button");
     if (submitBtn) submitBtn.disabled = false;
 }
