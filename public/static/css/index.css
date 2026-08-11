@@ -310,7 +310,7 @@ aside, main {
 
     border: 1px solid var(--midnight-purple-3);
     border-radius: var(--border-radius);
-    background: var(--midnight-purple-1);
+    background: var(--midnight-purple-5);
     text-align: center;
 
     & > input {
@@ -346,6 +346,7 @@ aside, main {
             background: var(--midnight-purple-3);
         }
     }
+    &::-webkit-scrollbar { width: 0.5rem;}
     &::-webkit-scrollbar-thumb {
         background: var(--midnight-purple-3);
         border: none;
