@@ -116,18 +116,24 @@ export function createFriend(state: AppState, friend: Friend): Node | null {
                 <img src="/static/assets/${friend.photo}" alt="">
             </div>
             <p class="friend-name"></p>
+            <button 
+                type="button"
+                data-id="${friend.relationship_id}"
+                class="btn btn-borderless action-btn remove-btn"
+            >&times;</button>
         </div>
     `;
     const parser: DOMParser = new DOMParser();
     const doc: Document = parser.parseFromString(el, "text/html");
 
     const friendCard = doc.body.querySelector(".friend-card");
-    if (friendCard) {
-        friendCard.addEventListener("click", () => {
-            setActiveChatroom(state, friend);
-            document.getElementById("friend-list")?.togglePopover();
-        });
-    }
+    const actionBtn = doc.body.querySelector(".action-btn");
+
+    friendCard?.addEventListener("click", (e) => {
+        if (e.target === actionBtn) return;
+        setActiveChatroom(state, friend);
+        document.getElementById("friend-list")?.togglePopover();
+    });
     const friendName: HTMLParagraphElement | null =
         doc.body.querySelector(".friend-name");
     if (friendName) friendName.textContent = friend.fullname;
