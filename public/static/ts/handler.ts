@@ -1,10 +1,12 @@
 import { send as wsSend } from "./websocket.js";
 import type { AppState, Message } from "./types.ts";
 import { logout } from "./api.js";
+import { createFriend } from "./component.js";
 
 export function registerHandler(state: AppState): void {
     handleSend(state);
     handleLogout(state);
+    handleFriendListInput(state);
 }
 
 function handleSend(state: AppState): void {
@@ -60,6 +62,34 @@ function handleLogout(state: AppState): void {
             state.friends = [];
             state.recent_chats = [];
             window.location.href = "/login";
+        }
+    });
+}
+
+function handleFriendListInput(state: AppState): void {
+    if (state.friends.length < 1) return;
+    const searchField: HTMLInputElement | null =
+        document.querySelector("#friend-list > input");
+    const friendList = document.querySelector("#friend-list-area");
+    if (!friendList) return;
+    searchField?.addEventListener("keyup", event => {
+        const searchString = searchField?.value;
+        if (!searchString) {
+            friendList.innerHTML = "";
+            for (const friend of state.friends) {
+                const node = createFriend(state, friend);
+                if (node) friendList.appendChild(node);
+            }
+            return
+        } else {
+            const pattern = new RegExp(searchString, "i");
+            let filteredFriends = state.friends.filter(f => pattern.test(f.fullname));
+            friendList.innerHTML = "";
+            for (const friend of filteredFriends) {
+                const node = createFriend(state, friend);
+                if (node) friendList.appendChild(node);
+            }
+            return
         }
     });
 }
