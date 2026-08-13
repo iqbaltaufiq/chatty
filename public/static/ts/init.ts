@@ -58,7 +58,7 @@ async function initFriendList(state: AppState): Promise<void> {
         return
     }
     
-    const friendList = document.getElementById("friend-list");
+    const friendList = document.getElementById("friend-list-area");
     for (const friend of state.friends) {
         const newFriend = createFriend(state, friend);
         if (newFriend) friendList?.appendChild(newFriend);

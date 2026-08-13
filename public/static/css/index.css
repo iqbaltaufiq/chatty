@@ -70,10 +70,6 @@ aside {
     padding: 0.5rem;
 
     cursor: pointer;
-
-    &:hover {
-        background: var(--midnight-purple-4);
-    }
 }
 .card-image {
     grid-area: photo;
@@ -329,7 +325,7 @@ aside, main {
         padding: 0.5rem 1rem;
         border-radius: var(--border-radius);
     }
-    & > .friend-card {
+    & .friend-card {
         display: grid;
         grid-template-columns: max-content auto;
         align-items: center;
