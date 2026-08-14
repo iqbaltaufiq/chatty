@@ -62,6 +62,19 @@ export async function getFriends(): Promise<Friend[] | null> {
     }
 }
 
+export async function addFriend(username: string): Promise<boolean> {
+    try {
+        const response = await fetch(`/api/relationship/${username}`, {
+            method: "POST",
+        });
+        if (!response.ok) throw new Error("failed to add user as a friend");
+        return true
+    } catch (error) {
+        console.error(error);
+        return false
+    }
+}
+
 export async function login(username: string, password: string): Promise<boolean> {
     let isSuccess: boolean;
     try {
