@@ -1,4 +1,4 @@
-import { getChats, getUser } from "./api.js";
+import { addFriend, getChats, getUser } from "./api.js";
 import type { AppState, Chat, Friend, Message, RecentChat, User } from "./types.ts";
 import { padTime } from "./utility.js";
 
@@ -138,6 +138,39 @@ export function createFriend(state: AppState, friend: Friend): Node | null {
         doc.body.querySelector(".friend-name");
     if (friendName) friendName.textContent = friend.fullname;
 
+    return doc.body.firstChild;
+}
+
+export function createUserSearch(user: User): Node | null {
+    const el = `
+        <div class="friend-card">
+            <div class="image-wrapper image-circle friend-photo">
+                <img src="/static/assets/${user.photo}" alt="">
+            </div>
+            <p class="friend-name"></p>
+            <button 
+                type="button"
+                data-username="${user.username}"
+                class="btn btn-borderless action-btn add-btn"
+            >&plus;</button>
+        </div>
+    `;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(el.trim(), "text/html");
+    const friendName = doc.body.querySelector("p");
+    if (friendName) friendName.textContent = user.fullname;
+
+    const addBtn = doc.body.querySelector("button");
+    addBtn?.addEventListener("click", async () => {
+        try {
+            const success = addFriend(user.username);
+            if (!success) throw new Error("failed adding user as friend");
+            return window.location.reload();
+        } catch (error) {
+            console.error(error);
+            return
+        }
+    });
     return doc.body.firstChild;
 }
 
