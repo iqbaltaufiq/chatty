@@ -1,7 +1,7 @@
 import { send as wsSend } from "./websocket.js";
 import type { AppState, Message } from "./types.ts";
-import { logout } from "./api.js";
-import { createFriend } from "./component.js";
+import { getUser, logout } from "./api.js";
+import { createFriend, createUserSearch } from "./component.js";
 
 export function registerHandler(state: AppState): void {
     handleSend(state);
@@ -82,12 +82,37 @@ function handleFriendListInput(state: AppState): void {
             }
             return
         } else {
-            const pattern = new RegExp(searchString, "i");
-            let filteredFriends = state.friends.filter(f => pattern.test(f.fullname));
-            friendList.innerHTML = "";
-            for (const friend of filteredFriends) {
-                const node = createFriend(state, friend);
-                if (node) friendList.appendChild(node);
+            if (searchString[0] === "@") {
+                if (event.key === "Enter") {
+                    let found = false;
+                    const username = searchString.split("@")[1];
+                    if (username === state.user?.username) return;
+                    state.friends.map(f => {
+                        if (f.username === username) {
+                            found = true;
+                            return
+                        }
+                    });
+                    if (found) return;
+
+                    getUser(username)
+                    .then(user => {
+                        if (!user) return;
+                        const node = createUserSearch(user);
+                        if (!node) return;
+                        friendList.innerHTML = "";
+                        friendList.appendChild(node);
+                    })
+                    .catch(err => console.error(err));
+                }
+            } else {
+                const pattern = new RegExp(searchString, "i");
+                let filteredFriends = state.friends.filter(f => pattern.test(f.fullname));
+                friendList.innerHTML = "";
+                for (const friend of filteredFriends) {
+                    const node = createFriend(state, friend);
+                    if (node) friendList.appendChild(node);
+                }
             }
             return
         }
