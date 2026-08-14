@@ -327,7 +327,7 @@ aside, main {
     }
     & .friend-card {
         display: grid;
-        grid-template-columns: max-content auto;
+        grid-template-columns: max-content auto max-content;
         align-items: center;
         gap: 1rem;
         padding: 0.5rem 1rem;
@@ -345,6 +345,19 @@ aside, main {
         }
         &:hover {
             background: var(--midnight-purple-3);
+        }
+        & > .action-btn {
+            color: var(--white);
+            font-size: smaller;
+            padding: 0.5rem 0.75rem;
+            background: var(--midnight-purple-4);
+            border-radius: 50%;
+            color: gray;
+
+            &:hover {
+                border-color: var(--midnight-purple-5);
+                background: var(--midnight-purple-5);
+            }
         }
     }
     &::-webkit-scrollbar { width: 0.5rem;}
