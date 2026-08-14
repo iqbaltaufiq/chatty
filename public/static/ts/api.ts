@@ -12,8 +12,6 @@ export async function getUser(identifier: string | null = null): Promise<User | 
         const user: User = json.data?.user;
         return user
     } catch (error) {
-        window.location.href = "/login";
-        console.log("we cannot find your record");
         console.error(error);
         return null
     }
