@@ -73,6 +73,19 @@ export async function addFriend(username: string): Promise<boolean> {
     }
 }
 
+export async function removeFriend(relationshipID: number): Promise<boolean> {
+    try {
+        const response = await fetch(`/api/relationship/id/${relationshipID}`, {
+            method: "DELETE"
+        });
+        if (!response.ok) throw new Error("failed to remove a friend");
+        return true
+    } catch (error) {
+        console.error(error);
+        return false
+    }
+}
+
 export async function login(username: string, password: string): Promise<boolean> {
     let isSuccess: boolean;
     try {

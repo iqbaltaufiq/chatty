@@ -1,4 +1,4 @@
-import { addFriend, getChats, getUser } from "./api.js";
+import { addFriend, getChats, getUser, removeFriend } from "./api.js";
 import type { AppState, Chat, Friend, Message, RecentChat, User } from "./types.ts";
 import { padTime } from "./utility.js";
 
@@ -134,9 +134,15 @@ export function createFriend(state: AppState, friend: Friend): Node | null {
         setActiveChatroom(state, friend);
         document.getElementById("friend-list")?.togglePopover();
     });
+
     const friendName: HTMLParagraphElement | null =
         doc.body.querySelector(".friend-name");
     if (friendName) friendName.textContent = friend.fullname;
+
+    actionBtn?.addEventListener("click", async (_) => {
+        const success = await removeFriend(friend.relationship_id);
+        if (success) return window.location.reload();
+    });
 
     return doc.body.firstChild;
 }
