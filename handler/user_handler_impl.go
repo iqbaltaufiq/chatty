@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"chatty/entity"
+	customerrors "chatty/model/custom_errors"
 	"chatty/service"
 	"chatty/util"
 )
@@ -125,6 +126,10 @@ func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	file, header, err := r.FormFile("photo")
 	if err != nil {
 		util.JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	if header.Size > maxFileSize {
+		util.JSONError(w, http.StatusBadRequest, &customerrors.ErrSizeLimitExceeded{})
 		return
 	}
 	username, ok := util.FromCtxUsername(r.Context())
