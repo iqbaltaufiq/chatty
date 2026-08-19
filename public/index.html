@@ -19,71 +19,7 @@
                         popovertarget="friend-list"
                     >&plus; New chat</button>
                 </div>
-                <div class="chat-list">
-                    <div class="chat-card" data-roomID="abc123">
-                        <div class="image-wrapper image-circle card-image">
-                            <img src="/static/assets/default.png" alt="">
-                        </div>
-                        <div class="card-info">
-                            <p class="card-name">Ricardo Kaka Dos Santos Leite</p>
-                            <p class="card-message">llorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit ametorem</p>
-                        </div>
-                    </div>
-                    <div class="chat-card">
-                        <div class="image-wrapper image-circle card-image">
-                            <img src="/static/assets/default.png" alt="">
-                        </div>
-                        <div class="card-info">
-                            <p class="card-name">Jean Gunnhildr</p>
-                            <p class="card-message">llorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit ametorem</p>
-                        </div>
-                    </div>
-                    <div class="chat-card">
-                        <div class="image-wrapper image-circle card-image">
-                            <img src="/static/assets/default.png" alt="">
-                        </div>
-                        <div class="card-info">
-                            <p class="card-name">Mona Megistus</p>
-                            <p class="card-message">llorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit ametorem</p>
-                        </div>
-                    </div>
-                    <div class="chat-card">
-                        <div class="image-wrapper image-circle card-image">
-                            <img src="/static/assets/default.png" alt="">
-                        </div>
-                        <div class="card-info">
-                            <p class="card-name">Mona Megistus</p>
-                            <p class="card-message">llorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit ametorem</p>
-                        </div>
-                    </div>
-                    <div class="chat-card">
-                        <div class="image-wrapper image-circle card-image">
-                            <img src="/static/assets/default.png" alt="">
-                        </div>
-                        <div class="card-info">
-                            <p class="card-name">Mona Megistus</p>
-                            <p class="card-message">llorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit ametorem</p>
-                        </div>
-                    </div>
-                    <div class="chat-card">
-                        <div class="image-wrapper image-circle card-image">
-                            <img src="/static/assets/default.png" alt="">
-                        </div>
-                        <div class="card-info">
-                            <p class="card-name">Mona Megistus</p>
-                            <p class="card-message">llorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit ametorem</p>
-                        </div>
-                    </div>
-                    <div class="chat-card">
-                        <div class="image-wrapper image-circle card-image">
-                            <img src="/static/assets/default.png" alt="">
-                        </div>
-                        <div class="card-info">
-                            <p class="card-name">Mona Megistus</p>
-                            <p class="card-message">llorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit ametorem</p>
-                        </div>
-                    </div>
-                </div>
+                <div class="chat-list"></div>
                 <div class="user-area">
                     <div class="user-card">
                         <div class="user-group">
@@ -103,7 +39,7 @@
                             </button>
                         </div>
                         
-                        <p class="user-name">Ricardo Kaka Dos Santos Leite Robert Lewandowski</p>
+                        <p class="user-name"></p>
                     </div>
                 </div>
             </aside>
@@ -113,52 +49,25 @@
                     <div class="image-wrapper image-circle chat-header-photo">
                         <img src="/static/assets/default.png" alt="">
                     </div>
-                    <p class="chat-header-name">Mona Megistus</p>
+                    <p class="chat-header-name"></p>
                 </div>
                 <div class="chat-area">
                     <!-- chat bubble -->
-                    <div class="bubble inbound">
-                        <p class="message">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
-                        <p class="time">20:45</p>
-                    </div>
-                    <div class="bubble outbound">
-                        <p class="message">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
-                        <p class="time">20:45</p>
-                    </div>
-                    <div class="bubble outbound">
-                        <p class="message">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
-                        <p class="time">20:45</p>
-                    </div>
-                    <div class="bubble outbound">
-                        <p class="message">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
-                        <p class="time">20:45</p>
-                    </div>
-                    <div class="bubble outbound">
-                        <p class="message">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
-                        <p class="time">20:45</p>
-                    </div>
-                    <div class="bubble outbound">
-                        <p class="message">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
-                        <p class="time">20:45</p>
-                    </div>
-                    <div class="bubble outbound">
-                        <p class="message">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
-                        <p class="time">20:45</p>
-                    </div>
-                    <div class="bubble outbound">
-                        <p class="message">lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
-                        <p class="time">20:45</p>
-                    </div>
                 </div>
                 <div class="chat-input">
                     <!-- typing place -->
-                    <form>
+                    <form id="chat-form">
                         <textarea
                             rows="1"
                             name="message"
                             placeholder="Start chatting..."
+                            disabled
                         ></textarea>
-                        <button type="button" class="btn btn-borderless">
+                        <button 
+                            type="submit"
+                            class="btn btn-borderless"
+                            disabled
+                        >
                             <svg 
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
@@ -187,48 +96,9 @@
         </div>
         <div id="friend-list" popover>
             <input type="text" name="search" placeholder="Search name or @username...">
-            <div class="friend-card" data-username="mona">
-                <div class="image-wrapper image-circle friend-photo">
-                    <img src="/static/assets/default.png" alt="">
-                </div>
-                <p class="friend-name">Mona Megistus</p>
-            </div>
-            <div class="friend-card" data-username="mona">
-                <div class="image-wrapper image-circle friend-photo">
-                    <img src="/static/assets/default.png" alt="">
-                </div>
-                <p class="friend-name">Ricardo Kaka Dos Santos Leite</p>
-            </div>
-            <div class="friend-card" data-username="mona">
-                <div class="image-wrapper image-circle friend-photo">
-                    <img src="/static/assets/default.png" alt="">
-                </div>
-                <p class="friend-name">Robert Lewandowski</p>
-            </div>
-            <div class="friend-card" data-username="mona">
-                <div class="image-wrapper image-circle friend-photo">
-                    <img src="/static/assets/default.png" alt="">
-                </div>
-                <p class="friend-name">Mona Megistus</p>
-            </div>
-            <div class="friend-card" data-username="mona">
-                <div class="image-wrapper image-circle friend-photo">
-                    <img src="/static/assets/default.png" alt="">
-                </div>
-                <p class="friend-name">Mona Megistus</p>
-            </div>
-            <div class="friend-card" data-username="mona">
-                <div class="image-wrapper image-circle friend-photo">
-                    <img src="/static/assets/default.png" alt="">
-                </div>
-                <p class="friend-name">Mona Megistus</p>
-            </div>
-            <div class="friend-card" data-username="mona">
-                <div class="image-wrapper image-circle friend-photo">
-                    <img src="/static/assets/default.png" alt="">
-                </div>
-                <p class="friend-name">Mona Megistus</p>
-            </div>
+            <div id="friend-list-area"></div>
         </div>
+
+        <script type="module" src="/static/dist/main.js"></script>
     </body>
 </html>
