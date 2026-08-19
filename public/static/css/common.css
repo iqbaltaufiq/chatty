@@ -80,14 +80,13 @@ a {
 }
 
 ::-webkit-scrollbar {
-    background: none;
+    background: var(--midnight-purple-5);
+    width: 0.5rem;
+    height: 0.55rem;
 }
 
-::-webkit-scrollbar-track {
-    background: none;
-}
 ::-webkit-scrollbar-thumb {
     background: var(--midnight-purple-1);
-    border: 2px solid var(--midnight-purple-5);
+    border: 1px solid var(--midnight-purple-5);
     border-radius: var(--border-radius);
 }
