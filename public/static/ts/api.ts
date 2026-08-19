@@ -86,6 +86,20 @@ export async function removeFriend(relationshipID: number): Promise<boolean> {
     }
 }
 
+export async function updatePhoto(payload: FormData): Promise<boolean> {
+    try {
+        const response = await fetch("/api/user/photo", {
+            method: "PATCH",
+            body: payload
+        });
+        if (!response.ok) throw new Error("failed updating your photo");
+        return true
+    } catch (error) {
+        console.error(error);
+        return false
+    }
+}
+
 export async function login(username: string, password: string): Promise<boolean> {
     let isSuccess: boolean;
     try {
