@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 	"database/sql"
-	"io"
 	"strings"
 
 	"chatty/entity"
+	"chatty/model"
 	"chatty/repository"
 	"chatty/util"
 )
@@ -54,16 +54,24 @@ func (s *userService) UpdateFullname(ctx context.Context, username, fullname str
 // `photo` is a filename complete with its file extension.
 //
 // valid: `default.png`, `16228591.jpg`
-func (s *userService) UpdatePhoto(ctx context.Context, file io.Reader, username, photo string) error {
-	hashedFilename, err := util.HashFilename(photo)
+func (s *userService) UpdatePhoto(ctx context.Context, photo model.UploadedPhoto) error {
+	if err := photo.IsValid(); err != nil {
+		return err
+	}
+	hashedFilename, err := util.HashFilename(photo.GetFilename())
 	if err != nil {
 		return err
 	}
-	if err := s.userRepo.UpdatePhoto(ctx, s.db, username, hashedFilename); err != nil {
+	if err := s.userRepo.UpdatePhoto(ctx, s.db, photo.Username, hashedFilename); err != nil {
 		return err
 	}
-	if err := s.fileRepo.Store(ctx, file, hashedFilename); err != nil {
+	if err := s.fileRepo.Store(ctx, photo.File, hashedFilename); err != nil {
 		return err
+	}
+	if photo.OldPhoto != "default.png" {
+		if err := s.fileRepo.Delete(ctx, photo.OldPhoto); err != nil {
+			return err
+		}
 	}
 	return nil
 }
