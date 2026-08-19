@@ -199,7 +199,7 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
         chats: chats
     }
     const photo: HTMLImageElement | null =
-        document.querySelector(".chat-header > img");
+        document.querySelector(".chat-header-photo > img");
     if (photo) photo.src = `/static/assets/${chat.photo}`;
 
     const imageWrapper: HTMLElement | null =
