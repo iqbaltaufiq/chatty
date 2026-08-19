@@ -16,6 +16,5 @@ func NewFileService(fileRepo repository.FileRepository) FileService {
 }
 
 func (s *fileService) Store(ctx context.Context, file io.Reader, filename string) error {
-	s.fileRepo.Store(ctx, file, filename)
-	return nil
+	return s.fileRepo.Store(ctx, file, filename)
 }
