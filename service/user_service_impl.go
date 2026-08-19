@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"io"
 	"strings"
 
 	"chatty/entity"
@@ -13,15 +14,18 @@ import (
 type userService struct {
 	db       *sql.DB
 	userRepo repository.UserRepository
+	fileRepo repository.FileRepository
 }
 
 func NewUserService(
 	db *sql.DB,
 	userRepo repository.UserRepository,
+	fileRepo repository.FileRepository,
 ) UserService {
 	return &userService{
 		db,
 		userRepo,
+		fileRepo,
 	}
 }
 
@@ -50,10 +54,16 @@ func (s *userService) UpdateFullname(ctx context.Context, username, fullname str
 // `photo` is a filename complete with its file extension.
 //
 // valid: `default.png`, `16228591.jpg`
-func (s *userService) UpdatePhoto(ctx context.Context, username, photo string) error {
+func (s *userService) UpdatePhoto(ctx context.Context, file io.Reader, username, photo string) error {
 	hashedFilename, err := util.HashFilename(photo)
 	if err != nil {
 		return err
 	}
-	return s.userRepo.UpdatePhoto(ctx, s.db, username, hashedFilename)
+	if err := s.userRepo.UpdatePhoto(ctx, s.db, username, hashedFilename); err != nil {
+		return err
+	}
+	if err := s.fileRepo.Store(ctx, file, hashedFilename); err != nil {
+		return err
+	}
+	return nil
 }

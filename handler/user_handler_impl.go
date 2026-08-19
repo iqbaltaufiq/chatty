@@ -114,15 +114,17 @@ func (h *userHandler) UpdateFullname(w http.ResponseWriter, r *http.Request) {
 //
 // Allowed file extensions: jpg, jpeg, png, webp, avif, tiff.
 func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
-	var payload struct {
-		Photo string `json:"photo"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+	const (
+		maxFileSize int64 = 2 * 1000 * 1000 // 2MB
+		maxMemory   int64 = 1 << 10         // 1KB
+	)
+	if err := r.ParseMultipartForm(maxMemory); err != nil {
 		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
-	if payload.Photo == "" {
-		util.JSONError(w, http.StatusBadRequest, &RequestErrInsufficientBody{})
+	file, header, err := r.FormFile("photo")
+	if err != nil {
+		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
 	username, ok := util.FromCtxUsername(r.Context())
@@ -132,8 +134,9 @@ func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := h.userService.UpdatePhoto(
 		r.Context(),
+		file,
 		username,
-		payload.Photo,
+		header.Filename,
 	); err != nil {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
