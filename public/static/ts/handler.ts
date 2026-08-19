@@ -1,12 +1,13 @@
 import { send as wsSend } from "./websocket.js";
 import type { AppState, Message } from "./types.ts";
-import { getUser, logout } from "./api.js";
+import { getUser, logout, updatePhoto } from "./api.js";
 import { createFriend, createUserSearch } from "./component.js";
 
 export function registerHandler(state: AppState): void {
     handleSend(state);
     handleLogout(state);
     handleFriendListInput(state);
+    handleUpdatePhoto(state);
 }
 
 function handleSend(state: AppState): void {
@@ -116,5 +117,28 @@ function handleFriendListInput(state: AppState): void {
             }
             return
         }
+    });
+}
+
+function handleUpdatePhoto(state: AppState): void {
+    const form: HTMLFormElement | null =
+        document.querySelector("#profile-form");
+    if (!form) return;
+    const fileInput: HTMLInputElement | null =
+        form.querySelector(`input[type="file"]`);
+    if (!fileInput) return;
+
+    fileInput.addEventListener("change", async (_) => {
+        let file: File | null = null;
+        if (fileInput.files && fileInput.files[0]) {
+            file = fileInput.files[0];
+        }
+        const formData = new FormData();
+        if (file) {
+            formData.append("photo", file);
+            formData.append("old_photo", state.user?.photo || "");
+        }
+        const success = await updatePhoto(formData);
+        if (success) window.location.reload();
     });
 }
