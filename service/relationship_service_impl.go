@@ -104,7 +104,24 @@ func (s *relationshipService) Remove(ctx context.Context, initiator, target stri
 
 // RemoveByID unfriends two users referenced by their relationshipID.
 func (s *relationshipService) RemoveByID(ctx context.Context, relationshipID int) error {
-	return s.relationshipRepo.RemoveByID(ctx, s.db, relationshipID)
+	tx, _ := s.db.Begin()
+	defer tx.Rollback()
+
+	rel, err := s.relationshipRepo.Get(ctx, tx, relationshipID)
+	if err != nil {
+		return err
+	}
+	roomID, err := s.occupantRepo.GetRoomBetweenUsers(ctx, tx, rel.Initiator, rel.Target)
+	if err != nil {
+		return err
+	}
+	if err := s.relationshipRepo.RemoveByID(ctx, s.db, relationshipID); err != nil {
+		return err
+	}
+	if err := s.roomRepo.Delete(ctx, tx, roomID); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 // GetFriends retrieves a list of friends that belongs to the user.
