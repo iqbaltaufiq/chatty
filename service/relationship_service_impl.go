@@ -92,10 +92,13 @@ func (s *relationshipService) Remove(ctx context.Context, initiator, target stri
 	tx, _ := s.db.Begin()
 	defer tx.Rollback()
 
+	roomID, err := s.occupantRepo.GetRoomBetweenUsers(ctx, tx, initiator, target)
+	if err != nil {
+		return err
+	}
 	if err := s.relationshipRepo.Remove(ctx, tx, initiator, target); err != nil {
 		return err
 	}
-	roomID, _ := s.occupantRepo.GetRoomBetweenUsers(ctx, tx, initiator, target)
 	if err := s.roomRepo.Delete(ctx, tx, roomID); err != nil {
 		return err
 	}
