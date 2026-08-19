@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"chatty/entity"
 	"chatty/model"
 	"chatty/util"
 )
@@ -85,6 +86,25 @@ func (r *relationshipRepository) Exists(ctx context.Context, dbtx DBTX, initiato
 		exists = true
 	}
 	return exists, nil
+}
+
+func (r *relationshipRepository) Get(ctx context.Context, dbtx DBTX, id int) (entity.Relationship, error) {
+	query := `
+	SELECT id, initiator, target, created_at
+	FROM relationships
+	WHERE id = ?
+	LIMIT 1
+	`
+	var relationship entity.Relationship
+	if err := dbtx.QueryRowContext(ctx, query, id).Scan(
+		&relationship.ID,
+		&relationship.Initiator,
+		&relationship.Target,
+		&relationship.CreatedAt,
+	); err != nil {
+		return entity.Relationship{}, err
+	}
+	return relationship, nil
 }
 
 // GetFriends retrieves a list of users that have relationship with the specified user.
