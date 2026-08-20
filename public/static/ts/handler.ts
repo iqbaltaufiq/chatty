@@ -51,13 +51,7 @@ function handleLogout(state: AppState): void {
     logoutBtn?.addEventListener("click", async (ev) => {
         ev.preventDefault();
 
-        let isSuccess = false;
-        try {
-            isSuccess = await logout();
-        } catch (error) {
-            console.error(error);
-            return
-        }
+        const isSuccess = await logout();
         if (isSuccess) {
             state.user = null;
             state.room = null;
