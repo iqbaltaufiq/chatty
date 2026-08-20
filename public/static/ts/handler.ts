@@ -1,6 +1,6 @@
 import { send as wsSend } from "./websocket.js";
 import type { AppState, Message } from "./types.ts";
-import { getUser, logout, updatePhoto } from "./api.js";
+import { getUser, logout, updateFullname, updatePhoto } from "./api.js";
 import { createFriend, createUserSearch } from "./component.js";
 
 export function registerHandler(state: AppState): void {
@@ -8,6 +8,7 @@ export function registerHandler(state: AppState): void {
     handleLogout(state);
     handleFriendListInput(state);
     handleUpdatePhoto(state);
+    handleUpdateFullname(state);
 }
 
 function handleSend(state: AppState): void {
@@ -140,5 +141,24 @@ function handleUpdatePhoto(state: AppState): void {
         }
         const success = await updatePhoto(formData);
         if (success) window.location.reload();
+    });
+}
+
+function handleUpdateFullname(state: AppState): void {
+    const inputField: HTMLInputElement | null =
+        document.querySelector(`#profile input[type="text"]`);
+    const saveButton = document.querySelector("#profile button");
+    if (!inputField || !saveButton) return;
+
+    saveButton.addEventListener("click", async () => {
+        const fullname = inputField.value.trim();
+        const success = await updateFullname(fullname);
+        if (!success) return;
+        console.log("sukses ganti nama");
+        if (state.user) state.user.fullname = fullname;
+
+        // update the user's name in user card
+        const userCard = document.querySelector(".user-card .user-name");
+        if (userCard) userCard.textContent = fullname;
     });
 }

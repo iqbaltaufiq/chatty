@@ -100,6 +100,21 @@ export async function updatePhoto(payload: FormData): Promise<boolean> {
     }
 }
 
+export async function updateFullname(fullname: string): Promise<boolean> {
+    try {
+        const response = await fetch(`/api/user/fullname`, {
+            method: "PATCH",
+            headers: [["Content-Type", "application/json"]],
+            body: JSON.stringify({"fullname": fullname})
+        });
+        if (!response.ok) throw new Error("failed updating your name");
+        return true
+    } catch (error) {
+        console.error(error);
+        return false
+    }
+}
+
 export async function login(username: string, password: string): Promise<boolean> {
     let isSuccess: boolean;
     try {
