@@ -60,9 +60,7 @@ func (h *userHandler) Get(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, &PathErrInvalidPath{})
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"user": user,
-	})
+	util.SendJSON(w, http.StatusOK, userPayload{user})
 }
 
 // GetCurrent retrieves information about the currently logged in user.
@@ -75,7 +73,7 @@ func (h *userHandler) GetCurrent(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{"user": user})
+	util.SendJSON(w, http.StatusOK, userPayload{user})
 }
 
 // UpdateFullname only update `fullname` field on the database
@@ -105,9 +103,7 @@ func (h *userHandler) UpdateFullname(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "fullname has been updated successfully",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"fullname has been updated successfully"})
 }
 
 // UpdatePhoto only update `photo` field on the database
@@ -144,7 +140,5 @@ func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "photo has been updated successfully",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"photo has been updated successfully"})
 }
