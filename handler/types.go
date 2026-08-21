@@ -22,3 +22,8 @@ type recentChatsPayload struct {
 	Chats   []model.RecentChat `json:"chats"`
 	Message string             `json:"message"`
 }
+
+type friendsPayload struct {
+	Friends []model.Friend `json:"friends"`
+	Message string         `json:"message"`
+}

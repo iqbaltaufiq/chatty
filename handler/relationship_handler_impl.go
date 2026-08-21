@@ -31,9 +31,7 @@ func (h *relationshipHandler) Befriend(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "successfully befriending a user",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"successfully befriending a user"})
 }
 
 func (h *relationshipHandler) Unfriend(w http.ResponseWriter, r *http.Request) {
@@ -51,9 +49,7 @@ func (h *relationshipHandler) Unfriend(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "successfully removed a user from friend list",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"successfully removed a user from friend list"})
 }
 
 func (h *relationshipHandler) UnfriendByID(w http.ResponseWriter, r *http.Request) {
@@ -71,9 +67,7 @@ func (h *relationshipHandler) UnfriendByID(w http.ResponseWriter, r *http.Reques
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "successfully removed a user from friend list",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"successfully removed a user from friend list"})
 }
 
 func (h *relationshipHandler) GetFriends(w http.ResponseWriter, r *http.Request) {
@@ -83,8 +77,5 @@ func (h *relationshipHandler) GetFriends(w http.ResponseWriter, r *http.Request)
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "found",
-		"friends": friends,
-	})
+	util.SendJSON(w, http.StatusOK, friendsPayload{friends, "found"})
 }
