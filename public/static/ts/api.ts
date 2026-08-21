@@ -121,6 +121,7 @@ export async function login(username: string, password: string): Promise<boolean
         const response = await fetch("/api/login", {
             method: "POST",
             headers: [["Content-Type", "application/json"]],
+            cache: "no-store",
             body: JSON.stringify({username, password}),
         });
         isSuccess = response.ok;
@@ -134,7 +135,7 @@ export async function login(username: string, password: string): Promise<boolean
 export async function logout(): Promise<boolean> {
     let isSuccess = false;
     try {
-        const response = await fetch("/api/logout", { method: "POST" });
+        const response = await fetch("/api/logout", { method: "POST", cache: "no-store" });
         isSuccess = response.ok;
     } catch (error) {
         console.error(error);
