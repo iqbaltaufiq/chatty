@@ -37,9 +37,7 @@ func (h *occupantHandler) Add(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "A user has been added to the room.",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"A user has been added to the room."})
 }
 
 func (h *occupantHandler) Remove(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +61,5 @@ func (h *occupantHandler) Remove(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "A user has been removed from the room.",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"A user has been removed from the room."})
 }
