@@ -55,9 +55,7 @@ func (h *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	authCookie := util.SetAuthCookie(jsonwebtoken, 60*60*24)
 	http.SetCookie(w, authCookie)
 
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "you are successfully logged in",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"you are successfully logged in"})
 }
 
 // Register handles account creation for new user.
@@ -99,13 +97,12 @@ func (h *authHandler) Register(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	payload := util.M{"message": "your account has been created"}
-	util.JSONSuccess(w, http.StatusCreated, payload)
+	util.SendJSON(w, http.StatusCreated, messagePayload{"your account has been created"})
 }
 
 // Logout deauthenticates user by removing their auth cookie.
 func (h *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	deletedCookie := util.DeleteCookie(util.AuthCookieName)
 	http.SetCookie(w, deletedCookie)
-	util.JSONSuccess(w, http.StatusOK, util.M{"message": "logout successfully"})
+	util.SendJSON(w, http.StatusOK, messagePayload{"logout successfully"})
 }
