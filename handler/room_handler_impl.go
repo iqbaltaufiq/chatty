@@ -33,9 +33,7 @@ func (h *roomHandler) Create(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusCreated, util.M{
-		"message": "A room has been created.",
-	})
+	util.SendJSON(w, http.StatusCreated, messagePayload{"A room has been created."})
 }
 
 func (h *roomHandler) UpdateName(w http.ResponseWriter, r *http.Request) {
@@ -59,9 +57,7 @@ func (h *roomHandler) UpdateName(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "Room has been updated successfully.",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"Room has been updated successfully."})
 }
 
 func (h *roomHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +70,5 @@ func (h *roomHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "room has been deleted successfully",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"room has been deleted successfully"})
 }
