@@ -62,6 +62,6 @@ func (m *authMiddleware) NoAuth(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		util.JSONError(w, http.StatusForbidden, &AuthErrAlreadyLoggedIn{})
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
 	})
 }
