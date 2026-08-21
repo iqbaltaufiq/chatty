@@ -24,7 +24,7 @@ func (m *authMiddleware) Protected(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authCookie, err := r.Cookie(util.AuthCookieName)
 		if err != nil {
-			http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 
@@ -62,6 +62,6 @@ func (m *authMiddleware) NoAuth(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		http.Redirect(w, r, "/", http.StatusFound)
 	})
 }
