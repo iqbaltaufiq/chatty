@@ -24,7 +24,7 @@ func (m *authMiddleware) Protected(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authCookie, err := r.Cookie(util.AuthCookieName)
 		if err != nil {
-			util.JSONError(w, http.StatusUnauthorized, err)
+			http.Redirect(w, r, "/login", http.StatusMovedPermanently)
 			return
 		}
 
