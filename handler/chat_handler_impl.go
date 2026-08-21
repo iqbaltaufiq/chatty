@@ -24,11 +24,7 @@ func (h *chatHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message":   "found",
-		"rowsCount": len(chats),
-		"chats":     chats,
-	})
+	util.SendJSON(w, http.StatusOK, chatsPayload{chats, "found"})
 }
 
 func (h *chatHandler) GetRecents(w http.ResponseWriter, r *http.Request) {
@@ -37,10 +33,7 @@ func (h *chatHandler) GetRecents(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"chats":   chats,
-		"message": "found",
-	})
+	util.SendJSON(w, http.StatusOK, recentChatsPayload{chats, "found"})
 }
 
 func (h *chatHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +48,5 @@ func (h *chatHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
 	}
-	util.JSONSuccess(w, http.StatusOK, util.M{
-		"message": "message has been deleted successfully",
-	})
+	util.SendJSON(w, http.StatusOK, messagePayload{"message has been deleted successfully"})
 }
