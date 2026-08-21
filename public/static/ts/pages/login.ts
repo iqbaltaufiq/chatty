@@ -20,16 +20,10 @@ function handleSubmit(): void {
             formInputs[1]?.name === "password" ?
             formInputs[1].value :
             "";
-
-        let isSuccess = false;
-        try {
-            isSuccess = await login(username, password);
-            if (isSuccess) {
-                window.location.assign("/");
-                return
-            }
-        } catch (error) {
-            console.error(error);
+        const isSuccess = await login(username, password);
+        if (isSuccess) {
+            window.location.assign("/");
+            return
         }
         if (!isSuccess) {
             document.querySelector(".error")?.remove();
