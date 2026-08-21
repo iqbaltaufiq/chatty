@@ -56,13 +56,12 @@ func SendJSON(w http.ResponseWriter, statusCode int, data any) {
 // JSONError sets the `Content-Type` header to json.
 // It does not carry payload. Instead, it sends error string as message.
 func JSONError(w http.ResponseWriter, statusCode int, err error) {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-
-	payload := errorPayload{
+	bytesJSON, _ := json.Marshal(&errorPayload{
 		StatusText: http.StatusText(statusCode),
 		StatusCode: statusCode,
 		Message:    err.Error(),
-	}
-	json.NewEncoder(w).Encode(&payload)
+	})
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	w.Write(bytesJSON)
 }
