@@ -25,7 +25,7 @@ function handleSubmit(): void {
         try {
             isSuccess = await login(username, password);
             if (isSuccess) {
-                window.location.href = "/";
+                window.location.assign("/");
                 return
             }
         } catch (error) {

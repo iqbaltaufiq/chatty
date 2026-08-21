@@ -57,7 +57,7 @@ function handleLogout(state: AppState): void {
             state.room = null;
             state.friends = [];
             state.recent_chats = [];
-            window.location.href = "/login";
+            window.location.assign("/login");
         }
     });
 }
