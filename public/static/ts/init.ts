@@ -20,7 +20,7 @@ export async function initUser(state: AppState): Promise<void> {
         state.user = user;
     } catch (error) {
         console.error(error);
-        window.location.href = "/login";
+        window.location.assign("/login");
         return
     }
 
