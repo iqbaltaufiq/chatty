@@ -16,6 +16,12 @@ type successPayload struct {
 	Data       M      `json:"data"`
 }
 
+type successPayloadV2 struct {
+	StatusText string `json:"status_text"`
+	StatusCode int    `json:"status_code"`
+	Data       any    `json:"data"`
+}
+
 // errorPayload is the base structure of an error response.
 type errorPayload struct {
 	StatusText string `json:"status_text"`
@@ -34,6 +40,17 @@ func JSONSuccess(w http.ResponseWriter, statusCode int, data M) {
 		Data:       data,
 	}
 	json.NewEncoder(w).Encode(&payload)
+}
+
+func SendJSON(w http.ResponseWriter, statusCode int, data any) {
+	bytesJSON, _ := json.Marshal(&successPayloadV2{
+		StatusText: http.StatusText(statusCode),
+		StatusCode: statusCode,
+		Data:       data,
+	})
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	w.Write(bytesJSON)
 }
 
 // JSONError sets the `Content-Type` header to json.
