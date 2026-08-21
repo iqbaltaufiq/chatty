@@ -43,7 +43,7 @@ func JSONSuccess(w http.ResponseWriter, statusCode int, data M) {
 }
 
 func SendJSON(w http.ResponseWriter, statusCode int, data any) {
-	bytesJSON, _ := json.Marshal(&successPayloadV2{
+	bytesJSON, _ := json.Marshal(successPayloadV2{
 		StatusText: http.StatusText(statusCode),
 		StatusCode: statusCode,
 		Data:       data,
@@ -56,7 +56,7 @@ func SendJSON(w http.ResponseWriter, statusCode int, data any) {
 // JSONError sets the `Content-Type` header to json.
 // It does not carry payload. Instead, it sends error string as message.
 func JSONError(w http.ResponseWriter, statusCode int, err error) {
-	bytesJSON, _ := json.Marshal(&errorPayload{
+	bytesJSON, _ := json.Marshal(errorPayload{
 		StatusText: http.StatusText(statusCode),
 		StatusCode: statusCode,
 		Message:    err.Error(),
