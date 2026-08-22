@@ -31,3 +31,11 @@ func TestHash(test *testing.T) {
 		log.Println("password match with the hash")
 	})
 }
+
+func BenchmarkHash(bench *testing.B) {
+	bench.Run("hash_filename", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			util.HashFilename("a_very_long_file_name_sent_from_client.webp")
+		}
+	})
+}
