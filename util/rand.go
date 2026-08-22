@@ -10,15 +10,13 @@ var alphabets = [26]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
 
 func GenerateAlphanumeric(length int) string {
 	random := make([]string, length)
-	i := 0
-	for range length {
+	for i := range length {
 		// even = alphabet; odd = number.
 		if rand.IntN(10)%2 == 0 {
 			random[i] = alphabets[rand.IntN(26)]
 		} else {
 			random[i] = strconv.Itoa(rand.IntN(10))
 		}
-		i++
 	}
 	return strings.Join(random, "")
 }
