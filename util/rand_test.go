@@ -21,3 +21,11 @@ func TestRand(test *testing.T) {
 		fmt.Printf("length: %d\n", length)
 	})
 }
+
+func BenchmarkRand(bench *testing.B) {
+	bench.Run("generate 6 digits alphanumeric", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			util.GenerateAlphanumeric(6)
+		}
+	})
+}
