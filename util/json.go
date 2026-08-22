@@ -3,6 +3,7 @@ package util
 import (
 	"encoding/json"
 	"net/http"
+	"sync"
 )
 
 // M is a general-purpose map
@@ -29,6 +30,13 @@ type errorPayload struct {
 	Message    string `json:"message"`
 }
 
+// Reusable success payload to reduce memory allocation.
+var successPayloadPool = sync.Pool{
+	New: func() any {
+		return new(successPayloadV2)
+	},
+}
+
 // JSONSuccess sets the `Content-Type` header to json before writing `data` into ResponseWriter.
 func JSONSuccess(w http.ResponseWriter, statusCode int, data M) {
 	w.Header().Add("Content-Type", "application/json")
@@ -43,14 +51,16 @@ func JSONSuccess(w http.ResponseWriter, statusCode int, data M) {
 }
 
 func SendJSON(w http.ResponseWriter, statusCode int, data any) {
-	bytesJSON, _ := json.Marshal(successPayloadV2{
-		StatusText: http.StatusText(statusCode),
-		StatusCode: statusCode,
-		Data:       data,
-	})
+	payload := successPayloadPool.Get().(*successPayloadV2)
+	defer successPayloadPool.Put(payload)
+
+	payload.StatusCode = statusCode
+	payload.StatusText = http.StatusText(statusCode)
+	payload.Data = data
+
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	w.Write(bytesJSON)
+	json.NewEncoder(w).Encode(payload)
 }
 
 // JSONError sets the `Content-Type` header to json.
