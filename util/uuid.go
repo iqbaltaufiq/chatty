@@ -21,3 +21,19 @@ func UUIDtoBinary(s string) ([]byte, error) {
 	}
 	return thisID.MarshalBinary()
 }
+
+func UUIDtoBinaryArray(s string) ([16]byte, error) {
+	var binaryID [16]byte
+	thisID, err := uuid.Parse(s)
+	if err != nil {
+		return binaryID, err
+	}
+	sl, err := thisID.MarshalBinary()
+	if err != nil {
+		return binaryID, err
+	}
+	for i := range binaryID {
+		binaryID[i] = sl[i]
+	}
+	return binaryID, err
+}
