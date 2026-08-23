@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/google/uuid"
+
 	"chatty/util"
 )
 
@@ -52,5 +54,33 @@ func TestUUID(test *testing.T) {
 			t.Fail()
 		}
 		fmt.Printf("before: %s\nafter: %s\n", newID, stringUUID)
+	})
+}
+
+func BenchmarkUUID(bench *testing.B) {
+	id := uuid.Must(uuid.NewV7())
+	binaryID, _ := id.MarshalBinary()
+
+	bench.Run("generate uuid", func(b *testing.B) {
+		for b.Loop() {
+			util.GenerateUUID()
+		}
+	})
+
+	bench.Run("uuid binary to string", func(b *testing.B) {
+		for b.Loop() {
+			util.UUIDtoString(binaryID)
+		}
+	})
+
+	bench.Run("uuid string to binary v1", func(b *testing.B) {
+		for b.Loop() {
+			util.UUIDtoBinary(id.String())
+		}
+	})
+	bench.Run("uuid string to binary v2", func(b *testing.B) {
+		for b.Loop() {
+			util.UUIDtoBinaryArray(id.String())
+		}
 	})
 }
