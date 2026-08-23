@@ -55,6 +55,21 @@ func TestUUID(test *testing.T) {
 		}
 		fmt.Printf("before: %s\nafter: %s\n", newID, stringUUID)
 	})
+
+	test.Run("should produce the same binary", func(t *testing.T) {
+		id := uuid.Must(uuid.NewV7())
+
+		fn1, _ := util.UUIDtoBinary(id.String())
+		fn2, _ := util.UUIDtoBinaryArray(id.String())
+
+		str1, _ := util.UUIDtoString(fn1)
+		str2, _ := util.UUIDtoString(fn2[:])
+
+		if str1 != str2 {
+			t.Fatal("the output binary does not produce the same string")
+		}
+		fmt.Println("both binaries produce the same uuid string")
+	})
 }
 
 func BenchmarkUUID(bench *testing.B) {
