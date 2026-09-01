@@ -18,7 +18,7 @@ func NewServices(db *sql.DB, repo *repositories) *services {
 // Write down all of the services as method name below.
 
 func (s *services) User() service.UserService {
-	return service.NewUserService(s.db, s.repo.User(), s.repo.File())
+	return service.NewUserService(s.db, s.repo.User())
 }
 
 func (s *services) Auth() service.AuthService {

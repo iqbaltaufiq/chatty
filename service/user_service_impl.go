@@ -13,18 +13,15 @@ import (
 type userService struct {
 	db       *sql.DB
 	userRepo repository.UserRepository
-	fileRepo repository.FileRepository
 }
 
 func NewUserService(
 	db *sql.DB,
 	userRepo repository.UserRepository,
-	fileRepo repository.FileRepository,
 ) UserService {
 	return &userService{
 		db,
 		userRepo,
-		fileRepo,
 	}
 }
 
