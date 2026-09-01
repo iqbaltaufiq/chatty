@@ -10,6 +10,8 @@ import (
 	"chatty/repository"
 )
 
+const DefaultPhoto = "default.png"
+
 type SubImager interface {
 	SubImage(r image.Rectangle) image.Image
 }
