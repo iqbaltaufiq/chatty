@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"chatty/model"
 	"chatty/repository"
 )
 
@@ -27,16 +26,13 @@ func (s *fileService) Store(ctx context.Context, file io.Reader, filename string
 	return s.fileRepo.Store(ctx, file, filename)
 }
 
-func (s *fileService) StoreAvatar(ctx context.Context, photo model.UploadedPhoto) error {
-	if err := photo.IsValid(); err != nil {
-		return err
-	}
-	newFilename := filepath.Join("public", "static", "assets", photo.GetFilename())
-	f, err := os.Create(newFilename)
+func (s *fileService) StoreAvatar(ctx context.Context, src io.Reader, filename string) error {
+	dest := filepath.Join("public", "static", "assets", filename)
+	f, err := os.Create(dest)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	return makeSquareAvatar(photo.File, f, 400)
+	return makeSquareAvatar(src, f, 400)
 }
