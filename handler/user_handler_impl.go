@@ -6,16 +6,21 @@ import (
 
 	"chatty/entity"
 	"chatty/model"
+	customerrors "chatty/model/custom_errors"
 	"chatty/service"
 	"chatty/util"
 )
 
 type userHandler struct {
 	userService service.UserService
+	fileService service.FileService
 }
 
-func NewUserHandler(userService service.UserService) UserHandler {
-	return &userHandler{userService}
+func NewUserHandler(
+	userService service.UserService,
+	fileService service.FileService,
+) UserHandler {
+	return &userHandler{userService, fileService}
 }
 
 // Get retrieves user's detail identified by username or uuid.
@@ -117,7 +122,12 @@ func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusBadRequest, err)
 		return
 	}
+
 	oldPhoto := r.FormValue("old_photo")
+	if oldPhoto == "" {
+		util.JSONError(w, http.StatusBadRequest, &customerrors.ErrInsufficientPayload{})
+		return
+	}
 	file, header, err := r.FormFile("photo")
 	if err != nil {
 		util.JSONError(w, http.StatusBadRequest, err)
@@ -128,17 +138,30 @@ func (h *userHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 		util.JSONError(w, http.StatusUnauthorized, &util.ContextErrNotFound{})
 		return
 	}
-	if err := h.userService.UpdatePhoto(
-		r.Context(),
-		model.UploadedPhoto{
-			File:     file,
-			Header:   header,
-			Username: username,
-			OldPhoto: oldPhoto,
-		},
-	); err != nil {
+	up := model.UploadedPhoto{
+		File:   file,
+		Header: header,
+	}
+	if err := up.IsValid(); err != nil {
 		util.JSONError(w, http.StatusInternalServerError, err)
 		return
+	}
+	hashedFilename := up.HashFilename()
+	err = h.userService.UpdatePhoto(r.Context(), username, hashedFilename)
+	if err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	err = h.fileService.StoreAvatar(r.Context(), file, hashedFilename)
+	if err != nil {
+		util.JSONError(w, http.StatusInternalServerError, err)
+		return
+	}
+	if oldPhoto != service.DefaultPhoto {
+		if err := h.fileService.Delete(r.Context(), oldPhoto); err != nil {
+			util.JSONError(w, http.StatusInternalServerError, err)
+			return
+		}
 	}
 	util.SendJSON(w, http.StatusOK, messagePayload{"photo has been updated successfully"})
 }
