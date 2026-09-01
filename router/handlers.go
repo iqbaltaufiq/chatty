@@ -26,6 +26,7 @@ func (h *handlers) Auth() handler.AuthHandler {
 func (h *handlers) User() handler.UserHandler {
 	return handler.NewUserHandler(
 		h.service.User(),
+		h.service.File(),
 	)
 }
 
