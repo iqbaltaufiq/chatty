@@ -11,6 +11,7 @@ import (
 	"io"
 
 	xdraw "golang.org/x/image/draw"
+	_ "golang.org/x/image/webp"
 )
 
 func makeSquareAvatar(src io.Reader, dest io.Writer, resolution int) error {
