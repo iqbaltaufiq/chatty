@@ -36,3 +36,8 @@ func (s *fileService) StoreAvatar(ctx context.Context, src io.Reader, filename s
 
 	return makeSquareAvatar(src, f, 400)
 }
+
+func (s *fileService) Delete(ctx context.Context, filename string) error {
+	target := filepath.Join("public", "static", "assets", filename)
+	return os.Remove(target)
+}
