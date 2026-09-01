@@ -38,5 +38,5 @@ func (s *fileService) StoreAvatar(ctx context.Context, photo model.UploadedPhoto
 	}
 	defer f.Close()
 
-	return makeSquareAvatar(photo.File, f)
+	return makeSquareAvatar(photo.File, f, 400)
 }

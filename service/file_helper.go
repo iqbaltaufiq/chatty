@@ -13,7 +13,7 @@ import (
 	xdraw "golang.org/x/image/draw"
 )
 
-func makeSquareAvatar(src io.Reader, dest io.Writer) error {
+func makeSquareAvatar(src io.Reader, dest io.Writer, resolution int) error {
 	img, _, err := image.Decode(src)
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func makeSquareAvatar(src io.Reader, dest io.Writer) error {
 		return errors.New("this file does not implement SubImager interface.")
 	}
 	croppedImg := sub.SubImage(cropArea)
-	canvas := image.NewRGBA(image.Rect(0, 0, 400, 400))
+	canvas := image.NewRGBA(image.Rect(0, 0, resolution, resolution))
 
 	xdraw.BiLinear.Scale(canvas, canvas.Bounds(), croppedImg, croppedImg.Bounds(), draw.Src, nil)
 
