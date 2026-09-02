@@ -26,11 +26,11 @@ export async function initUser(state: AppState): Promise<void> {
 
     const photoExists = `/static/assets/${state.user?.photo}`;
     const photoAbsent = `/static/assets/default.png`;
-    const photo: HTMLImageElement | null = document.querySelector(".user-photo > img");
-    if (photo) photo.src = photoExists || photoAbsent;
+    const photo = document.querySelector(".user-photo > img") as HTMLImageElement;
+    photo.src = photoExists || photoAbsent;
 
-    const userName: HTMLParagraphElement | null = document.querySelector(".user-name");
-    if (userName) userName.textContent = state.user?.fullname || "unknown";
+    const userName = document.querySelector(".user-name") as HTMLParagraphElement;
+    userName.textContent = state.user?.fullname || "unknown";
 }
 
 export async function initRecentChats(state: AppState): Promise<void> {
@@ -42,8 +42,7 @@ export async function initRecentChats(state: AppState): Promise<void> {
         console.error(error);
         return
     }
-
-    const chatList: HTMLDivElement | null = document.querySelector(".chat-list");
+    const chatList = document.querySelector(".chat-list") as HTMLDivElement;
     for (const chat of state.recent_chats) {
         if (!chatList) break;
         const chatNode = createRecentChat(state, chat);

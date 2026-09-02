@@ -12,10 +12,8 @@ export function registerHandler(state: AppState): void {
 }
 
 function handleSend(state: AppState): void {
-    const form = document.getElementById("chat-form");
-    if (!form) return;
-    const textarea = form.querySelector("textarea");
-    if (!textarea) return;
+    const form = document.getElementById("chat-form") as HTMLFormElement;
+    const textarea = form.querySelector("textarea") as HTMLTextAreaElement;
     form.addEventListener("submit", event => {
         event.preventDefault();
         send(state, textarea);
@@ -64,12 +62,10 @@ function handleLogout(state: AppState): void {
 
 function handleFriendListInput(state: AppState): void {
     if (state.friends.length < 1) return;
-    const searchField: HTMLInputElement | null =
-        document.querySelector("#friend-list > input");
-    const friendList = document.querySelector("#friend-list-area");
-    if (!friendList) return;
-    searchField?.addEventListener("keyup", event => {
-        const searchString = searchField?.value;
+    const searchField = document.querySelector("#friend-list > input") as HTMLInputElement;
+    const friendList = document.querySelector("#friend-list-area") as HTMLDivElement;
+    searchField.addEventListener("keyup", event => {
+        const searchString = searchField.value;
         if (!searchString) {
             friendList.innerHTML = "";
             for (const friend of state.friends) {
@@ -116,14 +112,10 @@ function handleFriendListInput(state: AppState): void {
 }
 
 function handleUpdatePhoto(state: AppState): void {
-    const form: HTMLFormElement | null =
-        document.querySelector("#profile-form");
-    if (!form) return;
-    const fileInput: HTMLInputElement | null =
-        form.querySelector(`input[type="file"]`);
-    if (!fileInput) return;
+    const form = document.querySelector("#profile-form") as HTMLFormElement;
+    const fileInput = form.querySelector(`input[type="file"]`) as HTMLInputElement;
 
-    fileInput.addEventListener("change", async (_) => {
+    fileInput.addEventListener("change", async () => {
         let file: File | null = null;
         if (fileInput.files && fileInput.files[0]) {
             file = fileInput.files[0];
@@ -139,16 +131,13 @@ function handleUpdatePhoto(state: AppState): void {
 }
 
 function handleUpdateFullname(state: AppState): void {
-    const inputField: HTMLInputElement | null =
-        document.querySelector(`#profile input[type="text"]`);
-    const saveButton = document.querySelector("#profile button");
-    if (!inputField || !saveButton) return;
+    const inputField = document.querySelector(`#profile input[type="text"]`) as HTMLInputElement;
+    const saveButton = document.querySelector("#profile button") as HTMLButtonElement;
 
     saveButton.addEventListener("click", async () => {
         const fullname = inputField.value.trim();
         const success = await updateFullname(fullname);
         if (!success) return;
-        console.log("sukses ganti nama");
         if (state.user) state.user.fullname = fullname;
 
         // update the user's name in user card

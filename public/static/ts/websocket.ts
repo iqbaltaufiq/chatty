@@ -25,12 +25,12 @@ export function toggleConnection(state: AppState): void {
 
 function receiveMessage(state: AppState, message: MessageEvent): void {
     const chat: Message = JSON.parse(message.data);
-    const isChat = chat.type === "chat";
+    const isTypeChat = chat.type === "chat";
     const isTheChatOpened = chat.room_id === state.room?.id;
     console.log({chat});
 
     // append new chat bubble into chat field.
-    if (isChat && isTheChatOpened) {
+    if (isTypeChat && isTheChatOpened) {
         const newBubble = createChatBubble(state, chat);
         if (newBubble) {
             const chatArea = document.querySelector(".chat-area");

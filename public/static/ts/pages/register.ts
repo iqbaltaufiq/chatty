@@ -6,15 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function handleRegister(): void {
-    const form: HTMLFormElement | null =
-        document.querySelector("form");
-    if (!form) return;
+    const form = document.querySelector("form") as HTMLFormElement;
     
     form.addEventListener("submit", async (ev) => {
         ev.preventDefault();
 
-        const fileInput: HTMLInputElement | null =
-            document.querySelector(`input[type="file"]`);
+        const fileInput = document.querySelector(`input[type="file"]`) as HTMLInputElement;
         const file = fileInput?.files ? fileInput.files[0] : null;
         if (file) {
             if (file.size > MAX_FILE_SIZE) {
@@ -38,14 +35,14 @@ function handleRegister(): void {
 }
 
 function displayError(message: string): void {
-    const errMessage: HTMLElement | null = document.querySelector("p.error");
+    const errMessage = document.querySelector("p.error") as HTMLParagraphElement;
     if (!errMessage) return;
     errMessage.textContent = message;
     errMessage.style.display = "block";
 }
 
 function hideError(): void {
-    const errMessage: HTMLElement | null = document.querySelector("p.error");
+    const errMessage = document.querySelector("p.error") as HTMLParagraphElement;
     if (!errMessage) return;
     errMessage.textContent = "";
     errMessage.style.display = "none";

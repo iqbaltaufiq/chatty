@@ -5,9 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function handleSubmit(): void {
-    const form: HTMLFormElement | null =
-        document.querySelector("form");
-    if (!form) return;
+    const form = document.querySelector("form") as HTMLFormElement;
     form.addEventListener("submit", async (ev) => {
         ev.preventDefault();
 

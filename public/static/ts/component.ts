@@ -14,22 +14,18 @@ export function createRecentChat(state: AppState, chat: RecentChat): Node | null
         </div>
     </div>
     `;
-    const parser: DOMParser = new DOMParser();
-    const parsedEl = parser.parseFromString(el, "text/html");
+    const doc = new DOMParser().parseFromString(el.trim(), "text/html");
 
-    const chatCard: HTMLDivElement | null =
-        parsedEl.body.querySelector(".chat-card");
-    if (chatCard) {
-        chatCard.addEventListener("click", () => setActiveChatroom(state, chat));
-    }
+    const chatCard = doc.body.querySelector(".chat-card") as HTMLDivElement;
+    chatCard.addEventListener("click", () => setActiveChatroom(state, chat));
 
-    const cardName = parsedEl.body.querySelector(".card-name");
-    if (cardName) cardName.textContent = chat.fullname;
+    const cardName = doc.body.querySelector(".card-name") as HTMLParagraphElement;
+    cardName.textContent = chat.fullname;
 
-    const cardMessage = parsedEl.body.querySelector(".card-message");
-    if (cardMessage) cardMessage.textContent = chat.message;
+    const cardMessage = doc.body.querySelector(".card-message") as HTMLParagraphElement;
+    cardMessage.textContent = chat.message;
 
-    return parsedEl.body.firstChild;
+    return doc.body.firstChild;
 }
 
 export async function updateRecentChats(state: AppState, chat: Message): Promise<void> {
@@ -85,28 +81,27 @@ export async function updateRecentChats(state: AppState, chat: Message): Promise
 }
 
 export function createChatBubble(state: AppState, chat: Message): Node | null {
-    let time: Date;
-    let timeFormat: string = "";
-    if (chat.created_at) {
-        time = new Date(chat.created_at);
-        if (time) timeFormat =
-                `${padTime(time.getHours())}:${padTime(time.getMinutes())}`;
-    }
+    if (!chat.created_at) return null;
+
+    const time = new Date(chat.created_at);
+    const hh = `${padTime(time.getHours())}`; // 24h format
+    const mm = `${padTime(time.getMinutes())}`;
+    const timeFormat = `${hh}:${mm}`;
     const direction =
-        chat.username === state.user?.username ? "outbound" : "inbound";
+        chat.username === state.user?.username ?
+        "outbound" :
+        "inbound";
     const el =
     `<div class="bubble ${direction}">` +
         `<p class="message"></p>` +
         `<p class="time">${timeFormat}</p>` +
     `</div>`;
-    const parser: DOMParser = new DOMParser();
-    const parsedEl: Document = parser.parseFromString(el, "text/html");
 
-    const messageEl: HTMLElement | null =
-        parsedEl.body.querySelector(".message");
-    if (messageEl) messageEl.textContent = chat.message;
+    const doc = new DOMParser().parseFromString(el.trim(), "text/html");
+    const messageEl = doc.body.querySelector(".message") as HTMLParagraphElement;
+    messageEl.textContent = chat.message;
 
-    return parsedEl.body.firstChild;
+    return doc.body.firstChild;
 }
 
 export function createFriend(state: AppState, friend: Friend): Node | null {
@@ -123,23 +118,21 @@ export function createFriend(state: AppState, friend: Friend): Node | null {
             >&times;</button>
         </div>
     `;
-    const parser: DOMParser = new DOMParser();
-    const doc: Document = parser.parseFromString(el, "text/html");
+    const doc = new DOMParser().parseFromString(el.trim(), "text/html");
 
-    const friendCard = doc.body.querySelector(".friend-card");
-    const actionBtn = doc.body.querySelector(".action-btn");
+    const friendCard = doc.body.querySelector(".friend-card") as HTMLDivElement;
+    const actionBtn = doc.body.querySelector(".action-btn") as HTMLButtonElement;
 
-    friendCard?.addEventListener("click", (e) => {
+    friendCard.addEventListener("click", (e) => {
         if (e.target === actionBtn) return;
         setActiveChatroom(state, friend);
         document.getElementById("friend-list")?.togglePopover();
     });
 
-    const friendName: HTMLParagraphElement | null =
-        doc.body.querySelector(".friend-name");
-    if (friendName) friendName.textContent = friend.fullname;
+    const friendName = doc.body.querySelector(".friend-name") as HTMLParagraphElement;
+    friendName.textContent = friend.fullname;
 
-    actionBtn?.addEventListener("click", async (_) => {
+    actionBtn.addEventListener("click", async () => {
         const success = await removeFriend(friend.relationship_id);
         if (success) return window.location.reload();
     });
@@ -161,13 +154,12 @@ export function createUserSearch(user: User): Node | null {
             >&plus;</button>
         </div>
     `;
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(el.trim(), "text/html");
-    const friendName = doc.body.querySelector("p");
-    if (friendName) friendName.textContent = user.fullname;
+    const doc = new DOMParser().parseFromString(el.trim(), "text/html");
+    const friendName = doc.body.querySelector("p") as HTMLParagraphElement;
+    friendName.textContent = user.fullname;
 
-    const addBtn = doc.body.querySelector("button");
-    addBtn?.addEventListener("click", async () => {
+    const addBtn = doc.body.querySelector("button") as HTMLButtonElement;
+    addBtn.addEventListener("click", async () => {
         try {
             const success = addFriend(user.username);
             if (!success) throw new Error("failed adding user as friend");
@@ -198,22 +190,18 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
         name: chat.fullname,
         chats: chats
     }
-    const photo: HTMLImageElement | null =
-        document.querySelector(".chat-header-photo > img");
-    if (photo) photo.src = `/static/assets/${chat.photo}`;
+    const photo = document.querySelector(".chat-header-photo > img") as HTMLImageElement;
+    photo.src = `/static/assets/${chat.photo}`;
 
-    const imageWrapper: HTMLElement | null =
-        document.querySelector(".chat-header-photo");
-    if (imageWrapper) imageWrapper.style.display = "block";
+    const imageWrapper = document.querySelector(".chat-header-photo") as HTMLDivElement;
+    imageWrapper.style.display = "block";
 
-    const fullname: HTMLElement | null =
-        document.querySelector(".chat-header-name");
-    if (fullname) {
-        fullname.textContent = chat.fullname.trim();
-        fullname.style.display = "block";
-    }
-    const chatArea = document.querySelector(".chat-area");
-    if (chatArea) chatArea.innerHTML = "";
+    const fullname = document.querySelector(".chat-header-name") as HTMLParagraphElement;
+    fullname.textContent = chat.fullname.trim();
+    fullname.style.display = "block";
+
+    const chatArea = document.querySelector(".chat-area") as HTMLDivElement;
+    chatArea.innerHTML = "";
 
     for (const chat of chats) {
         const message: Message = {
@@ -228,21 +216,19 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
                 state.room?.username || "",
             ]
         }
-        const newBubble = createChatBubble(state, message)
-        if (newBubble) chatArea?.appendChild(newBubble);
+        const newBubble = createChatBubble(state, message);
+        if (newBubble) chatArea.appendChild(newBubble);
     }
     if (chatArea) chatArea.scrollTop = chatArea.scrollHeight;
 
-    const chatInput: HTMLElement | null =
-        document.querySelector(".chat-input");
-    if (!chatInput) return;
+    const chatInput = document.querySelector(".chat-input") as HTMLDivElement;
     chatInput.style.display = "block";
 
-    const textarea = chatInput.querySelector("textarea");
-    if (textarea) textarea.disabled = false;
+    const textarea = chatInput.querySelector("textarea") as HTMLTextAreaElement;
+    textarea.disabled = false;
 
-    const submitBtn = chatInput.querySelector("button");
-    if (submitBtn) submitBtn.disabled = false;
+    const submitBtn = chatInput.querySelector("button") as HTMLButtonElement;
+    submitBtn.disabled = false;
 }
 
 export function createProfile(state: AppState): Node | null {
