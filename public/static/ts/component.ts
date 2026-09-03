@@ -18,6 +18,7 @@ export function createRecentChat(state: AppState, chat: RecentChat): Node | null
 
     const chatCard = doc.body.querySelector(".chat-card") as HTMLDivElement;
     chatCard.addEventListener("click", () => setActiveChatroom(state, chat));
+    chatCard.title = chat.fullname;
 
     const cardName = doc.body.querySelector(".card-name") as HTMLParagraphElement;
     cardName.textContent = chat.fullname;
