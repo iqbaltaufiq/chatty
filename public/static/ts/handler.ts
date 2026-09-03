@@ -28,6 +28,8 @@ function handleSend(state: AppState): void {
 
 function send(state: AppState, textarea: HTMLTextAreaElement) {
     const message = textarea.value.trim();
+    if (!message.length) return;
+
     const newChat: Message = {
         id: null,
         username: state.user?.username || "",
