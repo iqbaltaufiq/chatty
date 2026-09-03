@@ -1,5 +1,5 @@
 import { send as wsSend } from "./websocket.js";
-import type { AppState, Message } from "./types.ts";
+import type { AppState, Message, User } from "./types.ts";
 import { getUser, logout, updateFullname, updatePhoto } from "./api.js";
 import { createFriend, createUserSearch } from "./component.js";
 
@@ -61,54 +61,67 @@ function handleLogout(state: AppState): void {
 }
 
 function handleFriendListInput(state: AppState): void {
-    if (state.friends.length < 1) return;
-    const searchField = document.querySelector("#friend-list > input") as HTMLInputElement;
-    const friendList = document.querySelector("#friend-list-area") as HTMLDivElement;
+    const searchField =
+        document.querySelector("#friend-list > input") as HTMLInputElement;
+    const friendList =
+        document.querySelector("#friend-list-area") as HTMLDivElement;
+
     searchField.addEventListener("keyup", event => {
-        const searchString = searchField.value;
+        const searchString = searchField.value.trim();
         if (!searchString) {
+            // reset friend list
             friendList.innerHTML = "";
             for (const friend of state.friends) {
                 const node = createFriend(state, friend);
                 if (node) friendList.appendChild(node);
             }
             return
-        } else {
-            if (searchString[0] === "@") {
-                if (event.key === "Enter") {
-                    let found = false;
-                    const username = searchString.split("@")[1];
-                    if (username === state.user?.username) return;
-                    state.friends.map(f => {
-                        if (f.username === username) {
-                            found = true;
-                            return
-                        }
-                    });
-                    if (found) return;
-
-                    getUser(username)
-                    .then(user => {
-                        if (!user) return;
-                        const node = createUserSearch(user);
-                        if (!node) return;
-                        friendList.innerHTML = "";
-                        friendList.appendChild(node);
-                    })
-                    .catch(err => console.error(err));
-                }
-            } else {
-                const pattern = new RegExp(searchString, "i");
-                let filteredFriends = state.friends.filter(f => pattern.test(f.fullname));
-                friendList.innerHTML = "";
-                for (const friend of filteredFriends) {
-                    const node = createFriend(state, friend);
-                    if (node) friendList.appendChild(node);
-                }
-            }
-            return
         }
+        if (searchString[0] === "@") {
+            if (event.key === "Enter")
+                searchUser(state, searchString, friendList);
+        } else {
+            filterFriends(state, searchString, friendList);
+        }
+        return
     });
+}
+
+async function searchUser(state: AppState, searchString: string, friendList: HTMLDivElement): Promise<void> {
+    let found = false;
+    const username = searchString.split("@")[1];
+    if (username === state.user?.username) return;
+
+    if (state.friends.length > 0) {
+        for (let i = 0; i < state.friends.length; i++) {
+            if (state.friends[i]?.username === username) {
+                found = true;
+                break;
+            }
+        }
+        if (found) return;
+    }
+    const user = await getUser(username) satisfies User | null;
+    if (!user) {
+        friendList.innerHTML = "";
+        return
+    }
+    const node = createUserSearch(user);
+    friendList.innerHTML = "";
+    if (node) friendList.appendChild(node);
+}
+
+function filterFriends(state: AppState, searchString: string, friendList: HTMLDivElement) {
+    if (!state.friends.length) return;
+
+    const pattern = new RegExp(searchString, "i");
+    let filteredFriends = state.friends.filter(f => pattern.test(f.fullname));
+
+    friendList.innerHTML = "";
+    for (const friend of filteredFriends) {
+        const node = createFriend(state, friend);
+        if (node) friendList.appendChild(node);
+    }
 }
 
 function handleUpdatePhoto(state: AppState): void {
