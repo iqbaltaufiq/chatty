@@ -229,6 +229,35 @@ main {
         }
     }
 }
+.chat-option {
+    position: absolute;
+    top: 0;
+    display: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+.bubble:hover .chat-option {
+    display: block;
+}
+.bubble.inbound .chat-option,
+.bubble.inbound .chat-option-menu {
+    left: 100%;
+}
+.bubble.outbound .chat-option,
+.bubble.outbound .chat-option-menu {
+    right: 100%;
+}
+.chat-option-menu {
+    position: absolute;
+    top: 0;
+    display: none;
+}
+.chat-option-item {
+    padding: 0.25rem 0.5rem;
+    font-size: smaller;
+    background: var(--midnight-purple-1);
+    color: var(--white);
+}
 .chat-input {
     /* border: 1px dashed cyan; */
     display: none;
