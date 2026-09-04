@@ -119,7 +119,7 @@ export function createChatBubble(state: AppState, chat: Message): Node | null {
 
     const tripleDot = doc.body.querySelector(".chat-option a") as HTMLAnchorElement;
     const dropdownMenu = doc.body.querySelector(".chat-option-menu") as HTMLDivElement;
-    const deleteBtn = dropdownMenu.querySelector("button") as HTMLButtonElement;
+    const deleteBtn = dropdownMenu.querySelector("button.delete-chat") as HTMLButtonElement;
     const bubble = doc.body.querySelector(".bubble") as HTMLDivElement;
 
     tripleDot.addEventListener("click", () => {
