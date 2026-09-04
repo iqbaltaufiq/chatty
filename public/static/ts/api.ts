@@ -115,6 +115,20 @@ export async function updateFullname(fullname: string): Promise<boolean> {
     }
 }
 
+export async function deleteChat(chatID: number): Promise<boolean> {
+    let isSuccess = false;
+    try {
+        const opt = { method: "DELETE" };
+        const response = await fetch(`/api/chat/${chatID}`, opt);
+        isSuccess = response.ok;
+
+        if (!response.ok) throw new Error(`failed deleting a chat with ID: ${chatID}`)
+    } catch (error) {
+        console.log((error as Error).message);
+    }
+    return isSuccess
+}
+
 export async function login(username: string, password: string): Promise<boolean> {
     let isSuccess: boolean;
     try {
