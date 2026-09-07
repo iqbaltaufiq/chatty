@@ -136,3 +136,12 @@ func (r *chatRepository) GetRecents(ctx context.Context, dbtx DBTX, username str
 	}
 	return chats, nil
 }
+
+func (r *chatRepository) DeleteAll(ctx context.Context, dbtx DBTX, roomID string) error {
+	query := `
+	DELETE FROM chats
+	WHERE room_id = ?
+	`
+	_, err := dbtx.ExecContext(ctx, query, roomID)
+	return err
+}

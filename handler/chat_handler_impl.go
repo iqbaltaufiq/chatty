@@ -50,3 +50,12 @@ func (h *chatHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	util.SendJSON(w, http.StatusOK, messagePayload{"message has been deleted successfully"})
 }
+
+func (h *chatHandler) DeleteAll(w http.ResponseWriter, r *http.Request) {
+	roomID := r.PathValue("roomID")
+	if err := h.chatService.DeleteAll(r.Context(), roomID); err != nil {
+		util.JSONError(w, http.StatusBadRequest, err)
+		return
+	}
+	util.SendJSON(w, http.StatusOK, messagePayload{"All messages in this room has been deleted"})
+}

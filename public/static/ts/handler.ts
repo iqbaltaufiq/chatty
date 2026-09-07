@@ -1,6 +1,6 @@
 import { send as wsSend } from "./websocket.js";
 import type { AppState, Message, User } from "./types.ts";
-import { getUser, logout, updateFullname, updatePhoto } from "./api.js";
+import { deleteAll, getUser, logout, updateFullname, updatePhoto } from "./api.js";
 import { createFriend, createUserSearch } from "./component.js";
 
 export function registerHandler(state: AppState): void {
@@ -9,6 +9,7 @@ export function registerHandler(state: AppState): void {
     handleFriendListInput(state);
     handleUpdatePhoto(state);
     handleUpdateFullname(state);
+    handleDeleteAll(state);
 }
 
 function handleSend(state: AppState): void {
@@ -158,5 +159,15 @@ function handleUpdateFullname(state: AppState): void {
         // update the user's name in user card
         const userCard = document.querySelector(".user-card .user-name");
         if (userCard) userCard.textContent = fullname;
+    });
+}
+
+function handleDeleteAll(state: AppState): void {
+    const deleteBtn = document.getElementById("chat-delete-all") as HTMLButtonElement;
+    deleteBtn.addEventListener("click", async () => {
+    if (!state.room || !state.room.id) return;
+        const isSuccess = await deleteAll(state.room.id)
+        if (!isSuccess) return;
+        return window.location.reload();
     });
 }

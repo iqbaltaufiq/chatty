@@ -12,4 +12,5 @@ type ChatService interface {
 	GetAll(ctx context.Context, roomID string) ([]entity.Chat, error)
 	GetRecents(ctx context.Context) ([]model.RecentChat, error)
 	Delete(ctx context.Context, chatID int) error
+	DeleteAll(ctx context.Context, roomID string) error
 }

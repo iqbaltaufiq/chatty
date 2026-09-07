@@ -12,4 +12,5 @@ type ChatRepository interface {
 	GetAll(ctx context.Context, dbtx DBTX, roomID string) ([]entity.Chat, error)
 	GetRecents(ctx context.Context, dbtx DBTX, username string) ([]model.RecentChat, error)
 	Delete(ctx context.Context, dbtx DBTX, chatID int) error
+	DeleteAll(ctx context.Context, dbtx DBTX, roomID string) error
 }

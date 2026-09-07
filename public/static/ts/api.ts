@@ -129,6 +129,20 @@ export async function deleteChat(chatID: number): Promise<boolean> {
     return isSuccess
 }
 
+export async function deleteAll(roomID: string): Promise<boolean> {
+    let isSuccess = false;
+    try {
+        const opt = {method: "DELETE"};
+        const response = await fetch(`/api/chat/${roomID}/all`, opt);
+        isSuccess = response.ok;
+
+        if (!isSuccess) throw new Error("failed emptying this chat room");
+    } catch (error) {
+        console.log((error as Error).message);
+    }
+    return isSuccess
+}
+
 export async function login(username: string, password: string): Promise<boolean> {
     let isSuccess: boolean;
     try {

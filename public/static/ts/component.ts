@@ -233,6 +233,8 @@ async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Pr
     const fullname = document.querySelector(".chat-header-name") as HTMLParagraphElement;
     fullname.textContent = chat.fullname.trim();
     fullname.style.display = "block";
+    const roomOption = document.querySelector(".room-option") as HTMLDivElement;
+    roomOption.style.display = "block";
 
     const chatArea = document.querySelector(".chat-area") as HTMLDivElement;
     chatArea.innerHTML = "";

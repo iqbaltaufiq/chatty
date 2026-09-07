@@ -8,6 +8,7 @@ import (
 
 	"chatty/entity"
 	"chatty/model"
+	customerrors "chatty/model/custom_errors"
 	"chatty/repository"
 	"chatty/util"
 )
@@ -91,4 +92,26 @@ func (s *chatService) GetRecents(ctx context.Context) ([]model.RecentChat, error
 // Delete deletes a chat specified by chatID.
 func (s *chatService) Delete(ctx context.Context, chatID int) error {
 	return s.chatRepo.Delete(ctx, s.db, chatID)
+}
+
+func (s *chatService) DeleteAll(ctx context.Context, roomID string) error {
+	if len(roomID) != int(entity.RoomIDLength) {
+		return &customerrors.ErrInvalidPath{}
+	}
+	username, _ := util.FromCtxUsername(ctx)
+
+	tx, _ := s.db.Begin()
+	defer tx.Rollback()
+
+	exists, err := s.occupantRepo.Exists(ctx, tx, roomID, username)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return sql.ErrNoRows
+	}
+	if err := s.chatRepo.DeleteAll(ctx, tx, roomID); err != nil {
+		return err
+	}
+	return tx.Commit()
 }

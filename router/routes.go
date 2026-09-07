@@ -64,6 +64,7 @@ func NewRouter(db *sql.DB, wsHub *bidirectional.Hub) http.Handler {
 	mux.Handle("GET /api/chat/{roomID}", mw.Attach(chatHandler.GetAll, authMw.Protected))
 	mux.Handle("GET /api/chat/recent", mw.Attach(chatHandler.GetRecents, authMw.Protected))
 	mux.Handle("DELETE /api/chat/{chatID}", mw.Attach(chatHandler.Delete, authMw.Protected))
+	mux.Handle("DELETE /api/chat/{roomID}/all", mw.Attach(chatHandler.DeleteAll, authMw.Protected))
 
 	// attach global middleware to multiplexer
 	muxWithGlobalMw := commonMw.AttachContext(mux)
