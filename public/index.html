@@ -51,7 +51,10 @@
                     </div>
                     <p class="chat-header-name"></p>
                     <div class="room-option">
-                        <button type="button" class="btn btn-borderless">
+                        <button
+                            type="button"
+                            class="btn btn-borderless"
+                        >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
                                 <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
                             </svg>
@@ -107,6 +110,13 @@
         <div id="friend-list" popover>
             <input type="text" name="search" placeholder="Search name or @username...">
             <div id="friend-list-area"></div>
+        </div>
+
+        <!-- notification -->
+        <div id="confirm-dialogue">
+            <p class="confirm-text">Are you sure?</p>
+            <button type="button" class="btn btn-borderless confirm-cancel">Cancel</button>
+            <button type="button" class="btn btn-borderless confirm-success">OK</button>
         </div>
 
         <script type="module" src="/static/dist/main.js"></script>
