@@ -181,18 +181,18 @@ main {
 }
 .room-option {
     position: relative;
+    anchor-name: --room-option;
     padding: 0.5rem;
     & svg {
         color: var(--white);
     }
 }
 .room-option-dropdown {
-    display: none;
     position: absolute;
-    right: 0;
-    top: 100%;
+    position-anchor: room-option;
+    position-area: bottom span-left;
     width: max-content;
-    z-index: 99;
+    background: none;
     border: 1px solid var(--midnight-purple-3);
     border-radius: var(--border-radius);
 }
@@ -213,7 +213,6 @@ main {
         border-bottom-right-radius: var(--border-radius);
     }
 }
-.room-option:hover .room-option-dropdown { display: block; }
 .chat-area {
     /* border: 1px dashed cyan; */
     --time-distance: 120%;
