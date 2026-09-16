@@ -302,17 +302,21 @@ main {
 
         display: grid;
         grid-template-columns: auto max-content;
-        align-items: center;
+        align-items: flex-end;
     }
     textarea {
         --font-size: 1rem;
 
-        height: 100%;
+        z-index: 99;
+        field-sizing: content;
+        max-height: 8lh;
+        overflow-y: hidden;
+        resize: none;
         border: none;
         outline: none;
         border-radius: var(--border-radius);
         padding-inline: 1rem;
-        padding-top: calc(var(--chat-input-height) / 3.5);
+        padding-block: calc(var(--chat-input-height) / 3.5);
 
         font-size: var(--font-size);
 
