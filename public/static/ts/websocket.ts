@@ -1,4 +1,5 @@
-import { createChatBubble, updateRecentChats } from "./component.js";
+import { createChatBubble } from "./components/chat.js";
+import { updateRecentChats } from "./components/recent_chat.js";
 import type { AppState, Message } from "./types.ts"
 
 const wsUrl: string = "ws://localhost:8000/websocket";

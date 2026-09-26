@@ -2,7 +2,9 @@ import type { AppState } from "./types.js";
 import { getFriends, getRecentChats, getUser } from "./api.js";
 import { registerHandler } from "./handler.js";
 import { toggleConnection } from "./websocket.js";
-import { createFriend, createProfile, createRecentChat } from "./component.js";
+import { createRecentChat } from "./components/recent_chat.js";
+import { createFriend } from "./components/friend.js";
+import { createProfile } from "./components/profile.js";
 
 export async function initApp(state: AppState): Promise<void> {
     await initUser(state);

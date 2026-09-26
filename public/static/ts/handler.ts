@@ -1,7 +1,7 @@
 import { send as wsSend } from "./websocket.js";
 import type { AppState, Message, User } from "./types.ts";
 import { deleteAll, getUser, logout, updateFullname, updatePhoto } from "./api.js";
-import { createFriend, createUserSearch } from "./component.js";
+import { createFriend, createUserSearch } from "./components/friend.js";
 
 export function registerHandler(state: AppState): void {
     handleSend(state);
