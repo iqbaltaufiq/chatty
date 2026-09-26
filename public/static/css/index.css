@@ -269,6 +269,7 @@ main {
     display: none;
     cursor: pointer;
     padding: 0.5rem;
+    color: var(--midnight-purple-1);
 }
 .bubble:hover .chat-option {
     display: block;
@@ -277,20 +278,36 @@ main {
 .bubble.inbound .chat-option-menu {
     left: 100%;
 }
-.bubble.outbound .chat-option,
-.bubble.outbound .chat-option-menu {
+.bubble.outbound .chat-option {
     right: 100%;
+}
+.bubble.outbound .message {
+    position: relative;
+    anchor-name: --message;
 }
 .chat-option-menu {
     position: absolute;
-    top: 0;
-    display: none;
+    position-anchor: message;
+    position-area: left center;
+    z-index: 0;
+    border: none;
+    background: none;
 }
 .chat-option-item {
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 1rem;
+    /* min-width: 25vw; */
     font-size: smaller;
-    background: var(--midnight-purple-1);
+    border: none;
+    border-radius: var(--border-radius);
+    background: var(--midnight-purple-5);
     color: var(--white);
+
+    &:hover {
+        background: var(--midnight-purple-1);
+    }
+}
+.chat-option:has(+ .chat-option-menu:popover-open) {
+    display: block;
 }
 .chat-input {
     /* border: 1px dashed cyan; */

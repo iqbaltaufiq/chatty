@@ -93,15 +93,13 @@ export function createChatBubble(state: AppState, chat: Message): Node | null {
         "outbound" :
         "inbound";
     const chatOption = 
-        `<div class="chat-option">` +
-            `<a tabindex="0" class="">` +
-                `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                  <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-                </svg>` +
-            `</a>` +
-            `<div class="chat-option-menu">` +
-                `<button class="btn btn-borderless chat-option-item delete-chat">Delete</button>` +
-            `</div>` +
+        `<button popovertarget="chat-popover-${chat.id}" class="btn btn-borderless chat-option">` +
+            `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+              <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+            </svg>` +
+        `</button>` +
+        `<div id="chat-popover-${chat.id}" class="chat-option-menu" popover>` +
+            `<button class="btn btn-borderless chat-option-item delete-chat">Delete</button>` +
         `</div>`;
     const menuButton = direction === "outbound" ? chatOption : "";
     const el =
@@ -117,15 +115,10 @@ export function createChatBubble(state: AppState, chat: Message): Node | null {
     messageEl.textContent = chat.message;
     if (direction === "inbound") return doc.body.firstChild;
 
-    const tripleDot = doc.body.querySelector(".chat-option a") as HTMLAnchorElement;
     const dropdownMenu = doc.body.querySelector(".chat-option-menu") as HTMLDivElement;
     const deleteBtn = dropdownMenu.querySelector("button.delete-chat") as HTMLButtonElement;
     const bubble = doc.body.querySelector(".bubble") as HTMLDivElement;
 
-    tripleDot.addEventListener("click", () => {
-        const isMenuVisible = dropdownMenu.style.display === "block";
-        dropdownMenu.style.display = isMenuVisible ? "none" : "block";
-    });
     deleteBtn.addEventListener("click", async () => {
         if (chat.id === null) return;
         const isDeleted = await deleteChat(chat.id);
