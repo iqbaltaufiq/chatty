@@ -9,6 +9,14 @@ import (
 	"chatty/entity"
 )
 
+type MessageType int
+
+const (
+	Chat = iota
+	System
+	AuthEvent
+)
+
 type Client struct {
 	Conn     *websocket.Conn
 	Username string
@@ -16,8 +24,8 @@ type Client struct {
 
 type Message struct {
 	entity.Chat
-	Type      string   `json:"type"`
-	Audiences []string `json:"audiences,omitempty"`
+	Type      MessageType `json:"type"`
+	Audiences []string    `json:"audiences,omitempty"`
 }
 
 func (m *Message) Stringify() string {

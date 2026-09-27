@@ -1,5 +1,11 @@
 export const MAX_FILE_SIZE = 2 * 1000 * 1000; // 2MB
 
+export enum MessageType {
+    Chat,
+    System,
+    AuthEvent,
+}
+
 export interface AppState {
     user: User | null;
     room: ActiveChatroom | null;
@@ -29,7 +35,7 @@ export interface Chat {
 }
 
 export interface Message extends Chat {
-    type: string;
+    type: MessageType;
     audiences: string[];
 }
 

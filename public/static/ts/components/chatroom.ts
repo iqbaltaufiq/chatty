@@ -1,5 +1,5 @@
 import { getChats } from "../api.js";
-import type { AppState, Chat, Friend, Message, RecentChat } from "../types.js";
+import { MessageType, type AppState, type Chat, type Friend, type Message, type RecentChat } from "../types.js";
 import { createChatBubble } from "./chat.js";
 
 export async function setActiveChatroom(state: AppState, chat: RecentChat | Friend): Promise<void> {
@@ -42,7 +42,7 @@ export async function setActiveChatroom(state: AppState, chat: RecentChat | Frie
             username: chat.username,
             room_id: chat.room_id,
             message: chat.message,
-            type: "chat",
+            type: MessageType.Chat,
             created_at: chat.created_at || null, 
             audiences: [
                 state.user?.username || "",

@@ -1,5 +1,5 @@
 import { send as wsSend } from "./websocket.js";
-import type { AppState, Message, User } from "./types.ts";
+import { MessageType, type AppState, type Message, type User } from "./types.js";
 import { deleteAll, getUser, logout, updateFullname, updatePhoto } from "./api.js";
 import { createFriend, createUserSearch } from "./components/friend.js";
 
@@ -35,7 +35,7 @@ function send(state: AppState, textarea: HTMLTextAreaElement) {
         id: null,
         username: state.user?.username || "",
         room_id: state.room?.id || "",
-        type: "chat",
+        type: MessageType.Chat,
         message: message || "",
         created_at: new Date(),
         audiences: [

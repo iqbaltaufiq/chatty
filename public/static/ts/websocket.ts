@@ -1,6 +1,6 @@
 import { createChatBubble } from "./components/chat.js";
 import { updateRecentChats } from "./components/recent_chat.js";
-import type { AppState, Message } from "./types.ts"
+import { MessageType, type AppState, type Message } from "./types.js"
 
 const wsUrl: string = "ws://localhost:8000/websocket";
 let ws: WebSocket | null = null;
@@ -26,7 +26,7 @@ export function toggleConnection(state: AppState): void {
 
 function receiveMessage(state: AppState, message: MessageEvent): void {
     const chat: Message = JSON.parse(message.data);
-    const isTypeChat = chat.type === "chat";
+    const isTypeChat = chat.type === MessageType.Chat;
     const isTheChatOpened = chat.room_id === state.room?.id;
     console.log({chat});
 
