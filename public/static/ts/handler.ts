@@ -1,4 +1,4 @@
-import { send as wsSend } from "./websocket.js";
+import { toggleConnection, send as wsSend } from "./websocket.js";
 import { MessageType, type AppState, type Message, type User } from "./types.js";
 import { deleteAll, getUser, logout, updateFullname, updatePhoto } from "./api.js";
 import { createFriend, createUserSearch } from "./components/friend.js";
@@ -51,6 +51,8 @@ function handleLogout(state: AppState): void {
     const logoutBtn = document.getElementById("logout-btn");
     logoutBtn?.addEventListener("click", async (ev) => {
         ev.preventDefault();
+
+        toggleConnection(state);
 
         const isSuccess = await logout();
         if (isSuccess) {
