@@ -12,6 +12,9 @@ go mod download
 # install required typescript dependencies
 npm install
 
+# compile typescript code
+npx tsc
+
 # run or build the server
 go run cmd/chatty/main.go
 go build cmd/chatty/main.go
@@ -25,6 +28,7 @@ go build cmd/chatty/main.go
 - Typescript 6
 - HTML & CSS
 - [goose](https://github.com/pressly/goose) migration tool
+- MariaDB 10.6.23
 
 ## Contribution
 No contribution allowed, but feel free to fork or clone it.
